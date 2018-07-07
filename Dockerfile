@@ -5,7 +5,7 @@ ENV SETUP_TEMP=/tmp/syncovery.tar.gz
 
 ADD ./docker-entrypoint.sh /docker/entrypoint.sh
 
-RUN yum -y install wget openssl
+RUN yum -y install wget openssl libssl-dev
 RUN mkdir /syncovery && \
     wget -O "$SETUP_TEMP" 'https://www.syncovery.com/release/SyncoveryCL-x86_64-7.98c-Web.tar.gz' && \
     tar -xvf "$SETUP_TEMP" --directory /syncovery && \
