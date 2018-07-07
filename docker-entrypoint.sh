@@ -6,4 +6,4 @@ if [ ! -f /config/.Syncovery/Syncovery.cfg ]; then
 fi
 
 echo "Starting Server"
-exec /SyncoveryCL
+exec /syncovery/SyncoveryCL
