@@ -3,7 +3,7 @@ FROM debian:stable
 ENV SYNCOVERY_HOME=/config
 ENV SETUP_TEMP=/tmp/syncovery.tar.gz
 
-RUN apt update && apt install wget
+RUN apt update && apt install -y wget
 RUN mkdir /syncovery && \
     wget -O "$SETUP_TEMP" 'https://www.syncovery.com/release/SyncoveryCL-x86_64-7.98c-Web.tar.gz' && \
     tar -xvf "$SETUP_TEMP" --directory /syncovery && \
