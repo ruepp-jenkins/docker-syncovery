@@ -11,4 +11,4 @@ RUN mkdir /syncovery && \
 
 EXPOSE 8999
 
-ENTRYPOINT [ "./syncovery/SyncoveryCL SET /WEBSERVER=0.0.0.0" ]
+ENTRYPOINT [ "/syncovery/SyncoveryCL SET /WEBSERVER=0.0.0.0" ]
