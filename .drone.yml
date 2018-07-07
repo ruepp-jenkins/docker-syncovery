@@ -1,0 +1,8 @@
+pipeline:
+  docker:
+    secrets: [ docker_username, docker_password ]
+    image: plugins/docker
+    repo: hlince/syncovery
+    tags: latest
+    use_cache: true
+    auto_tag: true
