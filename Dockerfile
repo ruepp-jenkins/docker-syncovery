@@ -7,7 +7,7 @@ ADD ./docker-entrypoint.sh /docker/entrypoint.sh
 
 RUN yum -y install wget openssl-devel
 RUN mkdir /syncovery && \
-    wget -O "$SETUP_TEMP" 'https://www.syncovery.com/release/SyncoveryCL-x86_64-7.98c-Web.tar.gz' && \
+    wget -O "$SETUP_TEMP" 'https://www.syncovery.com/release/SyncoveryCL-x86_64-8.59a-Web.tar.gz' && \
     tar -xvf "$SETUP_TEMP" --directory /syncovery && \
     rm -f "$SETUP_TEMP" && \
     chmod +x /syncovery/SyncoveryCL && \
