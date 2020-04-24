@@ -1,5 +1,3 @@
-# TEST ONLY - DO NOT USE!!!
-
 # Original work by hlince 
 The first version was a copy of https://hub.docker.com/r/hlince/syncovery but with up2date SyncoveryCL versions. Now after some time I changed a little bit more (see next topic for details).
 
