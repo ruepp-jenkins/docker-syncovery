@@ -2,9 +2,9 @@
 The first version was a copy of https://hub.docker.com/r/hlince/syncovery but with up2date SyncoveryCL versions. Now after some time I changed a little bit more (see next topic for details).
 
 # Changes to original Image
-- Changed distribution from CentOS to Ubuntu 18.04.
+- Changed distribution from CentOS to Ubuntu 20.04.
 - Update to newer versions of SyncoveryCL
-- Removed support for 
+- Removed support for unraid (unable to test as I do not have one)
 
 # Paths
 There are only two paths which are used:
