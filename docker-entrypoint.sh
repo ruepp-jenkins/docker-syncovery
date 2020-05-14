@@ -5,5 +5,6 @@ if [ ! -f /config/.Syncovery/Syncovery.cfg ]; then
     /syncovery/SyncoveryCL SET /WEBSERVER=0.0.0.0
 fi
 
+echo "OS Date: $(date)"
 echo "Starting Server"
 /syncovery/SyncoveryCL
