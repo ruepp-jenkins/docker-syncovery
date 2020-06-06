@@ -13,6 +13,19 @@ There are only two paths which are used:
 
 If your syncovery should work with files on the host filesystem, make sure to bind them into your container (see examples below, just extend the volumes / -v parts).
 
+# Environment variables (with default values)
+- TZ=Europe/Berlin
+    - Set your timezone here (see Time / Date below)
+
+# Time / Date
+If you do not change your timezone (see environment variables) syncovery will user Europe/Berlin as default timezone. But if you want to make sure syncovery is using the correct time and date, you need to specify your timezone.
+List of possible timezones: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+
+Examples:
+- Europe/Berlin
+- Africa/Windhoek
+- America/Costa_Rica
+
 # Docker compose (example)
 
     version: '2.2'
