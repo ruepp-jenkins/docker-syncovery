@@ -2,6 +2,7 @@ FROM ubuntu:20.04
 
 ENV SYNCOVERY_HOME=/config
 ENV SETUP_TEMP=/tmp/syncovery.tar.gz
+ENV TZ=Europe/Berlin
 
 # prepare folder(s)
 RUN mkdir -p /syncovery
