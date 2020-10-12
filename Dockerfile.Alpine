@@ -22,7 +22,7 @@ RUN rm -R /tmp/*
 ENV LD_LIBRARY_PATH=/lib:/usr/local/lib:/usr/bin
 RUN export LD_LIBRARY_PATH
 
-RUN wget -O "$SETUP_TEMP" 'https://www.syncovery.com/release/SyncoveryCL-x86_64-9.10a-Web.tar.gz'
+RUN wget -O "$SETUP_TEMP" 'https://www.syncovery.com/release/SyncoveryCL-x86_64-9.16-Web.tar.gz'
 RUN tar -xvf "$SETUP_TEMP" --directory /syncovery
 RUN rm -f "$SETUP_TEMP"
 
