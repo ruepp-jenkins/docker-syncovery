@@ -43,6 +43,14 @@ Examples:
 
     docker run -d --name=syncovery -v /opt/docker/syncovery/config:/config -v /opt/docker/syncovery/tmp:/tmp -p 8999:8999 stefanruepp/syncoverycl
 
+# Dockerfiles
+
+Inside this repository are two dockerfiles:
+- Dockerfile: Ubuntu based image
+- Dockerfile.Alpine: Alpine base image (read below!)
+
+I tried to also port it to Alpine which seems to work. But all in all I do not recommend to use it because it is not tested by me anymore. At the moment I update this Dockerfile.Alpine to the newest links. This should make it able to be used as good as the Ubuntu one. My recommendation is, if you want to let it run under Alpine - make your own image :-).
+
 # Opening webinterface
 1. Run "Docker compose" or "Docker run".
 2. Go to http://docker-host:8999 (if docker runs local: http://localhost:8999)

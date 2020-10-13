@@ -18,7 +18,7 @@ RUN apt-get install -y bash wget openssl libcrypto++6 libssl-dev sqlite3 libsqli
 RUN ln -fs /usr/share/zoneinfo/$TZ /etc/localtime && dpkg-reconfigure -f noninteractive tzdata
 
 # download and install syncovery
-RUN wget -O "$SETUP_TEMP" 'https://www.syncovery.com/release/SyncoveryCL-x86_64-9.16-Web.tar.gz'
+RUN wget -O "$SETUP_TEMP" 'https://www.syncovery.com/release/SyncoveryCL-x86_64-9.17-Web.tar.gz'
 RUN tar -xvf "$SETUP_TEMP" --directory /syncovery
 RUN rm -f "$SETUP_TEMP"
 RUN chmod +x /syncovery/SyncoveryCL
