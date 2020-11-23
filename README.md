@@ -72,7 +72,7 @@ Inside this repository are two dockerfiles:
 - Dockerfile: Ubuntu based image
 - Alpine/Dockerfile: Alpine base image (read below!)
 
-Alpine Dockerfile was built by me to have a smaller image. But all in all it is not smaller and feels a little bit dirty. For now it is generated in an own tag. Feel free to use it but it is not supported or tested by me! I highly suggest to use the normal ubuntu image.
+Alpine Dockerfile was built by me to have a smaller image. But all in all it is not smaller and feels a little bit dirty. For now it is generated in an own tag. Feel free to use it but it is not supported or tested by me. I highly suggest to use the normal ubuntu image!
 
 # Opening webinterface
 1. Run "Docker compose" or "Docker run".
