@@ -1,6 +1,29 @@
 # Original work by hlince 
 The first version was a copy of https://hub.docker.com/r/hlince/syncovery but with up2date SyncoveryCL versions. Now after some time I changed a little bit more (see next topic for details).
 
+# License
+MIT License
+
+Copyright (c) 2020 Stefan Ruepp https://github.com/MyUncleSam/docker-syncovery
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
 # Changes to original Image
 - Changed distribution from CentOS to Ubuntu 20.04.
 - Update to newer versions of SyncoveryCL
@@ -49,7 +72,7 @@ Inside this repository are two dockerfiles:
 - Dockerfile: Ubuntu based image
 - Dockerfile.Alpine: Alpine base image (read below!)
 
-I tried to also port it to Alpine which seems to work. But all in all I do not recommend to use it because it is not tested by me anymore. At the moment I update this Dockerfile.Alpine to the newest links. This should make it able to be used as good as the Ubuntu one. My recommendation is, if you want to let it run under Alpine - make your own image :-).
+I tried to also port it to Alpine which seems to work but needs a lot of custom extensions. This makes the image as big as Ubuntu. But inside Ubuntu I simply can install needed dependencies without some modifications which feels a little bit dirty. So Alpine is no longer updated. If you want to make use of Alpine feel free to use my Dockerfile.Alpine but make your own image.
 
 # Opening webinterface
 1. Run "Docker compose" or "Docker run".
