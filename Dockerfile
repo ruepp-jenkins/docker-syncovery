@@ -11,18 +11,16 @@ RUN mkdir -p /syncovery
 ADD ./docker-entrypoint.sh /docker/entrypoint.sh
 
 # install packages
-RUN apt-get update 
-RUN apt-get install -y bash wget openssl libcrypto++6 libssl-dev sqlite3 libsqlite3-0 libsmbclient tzdata
-
 # change time
-RUN ln -fs /usr/share/zoneinfo/$TZ /etc/localtime && dpkg-reconfigure -f noninteractive tzdata
-
 # download and install syncovery
-RUN wget -O "$SETUP_TEMP" 'https://www.syncovery.com/release/SyncoveryCL-x86_64-9.21-Web.tar.gz'
-RUN tar -xvf "$SETUP_TEMP" --directory /syncovery
-RUN rm -f "$SETUP_TEMP"
-RUN chmod +x /syncovery/SyncoveryCL
-RUN chmod +x /docker/entrypoint.sh
+RUN apt-get update \
+    && apt-get install -y bash wget openssl libcrypto++6 libssl-dev sqlite3 libsqlite3-0 libsmbclient tzdata \
+    && ln -fs /usr/share/zoneinfo/$TZ /etc/localtime && dpkg-reconfigure -f noninteractive tzdata\
+    && wget -O "$SETUP_TEMP" 'https://www.syncovery.com/release/SyncoveryCL-x86_64-9.23-Web.tar.gz' \
+    && tar -xvf "$SETUP_TEMP" --directory /syncovery \
+    && rm -f "$SETUP_TEMP" \
+    && chmod +x /syncovery/SyncoveryCL \
+    && chmod +x /docker/entrypoint.sh
     
 EXPOSE 8999
 
