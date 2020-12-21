@@ -51,14 +51,19 @@ Examples:
 
 # Docker compose (example)
 
-    version: '2.2'
+    version: '3.5'
     services:
-       syncovery:
+       syncoverycl:
+           container_name: syncoverycl
+           hostname: syncoverycl
            restart: unless-stopped
            image: stefanruepp/syncoverycl
            volumes:
-               - /opt/docker/syncovery/config:/config
-               - /opt/docker/syncovery/tmp:/tmp
+               - ./config:/config
+               - ./tmp:/tmp
+               - /:/server:ro
+           environment:
+                TZ: Europe/Berlin
            ports:
                 - 8999:8999
 
