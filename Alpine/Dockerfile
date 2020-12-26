@@ -24,7 +24,7 @@ RUN apk update \
     && rm -R /tmp/* \
     && LD_LIBRARY_PATH=/lib:/usr/local/lib:/usr/bin \
     && export LD_LIBRARY_PATH \
-    && wget -O "$SETUP_TEMP" 'https://www.syncovery.com/release/SyncoveryCL-x86_64-9.23-Web.tar.gz' \
+    && wget -O "$SETUP_TEMP" 'https://www.syncovery.com/release/SyncoveryCL-x86_64-9.26b-Web.tar.gz' \
     && tar -xvf "$SETUP_TEMP" --directory /syncovery \
     && rm -f "$SETUP_TEMP" \
     && chmod +x /syncovery/SyncoveryCL \
