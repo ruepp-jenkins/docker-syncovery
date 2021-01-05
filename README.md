@@ -90,3 +90,63 @@ Alpine Dockerfile was built by me to have a smaller image. But all in all it is 
 repository of this container: https://github.com/MyUncleSam/docker-syncovery
 
 hlince original github repository: https://github.com/Howard3/docker-syncovery
+
+# Automatic builds
+Since 2021 this docker images are built using https://www.jenkins.io/ (this is my first jenkins integration, so if you have some advices - please let me know).
+
+As the linux version has no auto update feature, a possibility to check the version is not possible. The only way is to monitor the download URL: https://www.syncovery.com/syncovery9linux/
+
+So I built two jenkins projects to achive an automatic build.
+
+## Downloadpage change detector
+This projects main purpose is to detect changes of the page https://www.syncovery.com/syncovery9linux/. To achive this the URLTrigger plugin (https://plugins.jenkins.io/urltrigger/) is used:
+
+- Build Triggers
+  - URLTrigger
+    - URL: `https://www.syncovery.com/syncovery9linux/`
+    - Inspect UR content: `Monitor a change of the content`
+    - Schedule (every 15 minutes): `H/15 * * * *`
+- Build
+  - Execute shell
+    - Command:<br />
+```bash
+#!/bin/bash
+REGEX='v9\.[0-9]{1,2}[a-z]{0,2}' 
+SYNCOVERY=$(curl https://www.syncovery.com/syncovery9linux/)
+
+JENKINS_USERNAME='Stefan'
+JENKINS_PASSWORD='your user api token / or password (not recommended)'
+
+if [[ $SYNCOVERY =~ $REGEX ]]; then 
+        VERSION=${BASH_REMATCH[0]}
+        echo $VERSION
+        SYNCOVERY_VERSION=${VERSION:1}
+        echo $SYNCOVERY_VERSION
+        curl -I -X GET -u $JENKINS_USERNAME:$JENKINS_PASSWORD "https://jenkins.domain.tld/job/your_project_name/buildWithParameters?token=<your_project_token>&SYNCOVERY_VERSION=${SYNCOVERY_VERSION}"
+else
+        echo 'no match found!'
+fi
+```
+
+## Build project
+This project is able to build a syncovery version. For this it needs to be triggered from outside by providing the version. In this case it is triggered by the project above.
+
+- Build Triggers
+  - GitHub project: `https://github.com/MyUncleSam/docker-syncovery/`
+  - This project is parameterized
+    - Name: `SYNCOVERY_VERSION`
+    - Trim the string: `yes`
+- Source Code Management: Git
+  - Repository URL: `https://github.com/MyUncleSam/docker-syncovery.git`
+- Build Triggers
+  - Trigger builds Remotely (e.g. from scripts)
+    - Authentication Token: `choose your own token here - avoid special characters`
+- Build
+  - Docker Build and Publish
+    - Repository Name: `stefanruepp/syncoverycl`
+    - Tag: `latest` / `ubuntu-latest` / `ubuntu-${SYNCOVERY_VERSION}` / `alpine-latest` / `alpine-${SYNCOVERY_VERSION}`
+    - Registry credentials: `your hub.docker.com credentials`
+    - Build Context: `Ubuntu` / `Apline`
+    - Additional Build Arguments: `--build-arg SYNCOVERY_VERSION=${SYNCOVERY_VERSION}`
+
+You can test it by providing a version number like `9.26b`.
