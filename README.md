@@ -94,7 +94,7 @@ hlince original github repository: https://github.com/Howard3/docker-syncovery
 # Automatic builds
 Since 2021 this docker images are built using https://www.jenkins.io/ (this is my first jenkins integration, so if you have some advices - please let me know).
 
-As the linux version has no auto update feature, a possibility to check the version is not possible. The only way is to monitor the download URL: https://www.syncovery.com/syncovery9linux/
+As the linux version has no auto update feature, an automatic version check e.g. by text, json or xml is not possible. The only way is to monitor the download URL: https://www.syncovery.com/syncovery9linux/
 
 So I built two jenkins projects to achive an automatic build.
 
@@ -104,7 +104,9 @@ This projects main purpose is to detect changes of the page https://www.syncover
 - Build Triggers
   - URLTrigger
     - URL: `https://www.syncovery.com/syncovery9linux/`
-    - Inspect UR content: `Monitor a change of the content`
+    - Inspect UR content:
+      - Add `Monitor the contents of a TEXT response`
+      - Add a regEx: `.*v9\.\d{1,2}[a-z]{0,2}.*`
     - Schedule (every 15 minutes): `H/15 * * * *`
 - Build
   - Execute shell
