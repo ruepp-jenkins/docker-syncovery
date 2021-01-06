@@ -34,5 +34,6 @@ RUN apk update \
     && chmod +x /docker/entrypoint.sh
 
 EXPOSE 8999
+VOLUME [ "/tmp", "/config" ]
 
 ENTRYPOINT [ "/docker/entrypoint.sh" ]
