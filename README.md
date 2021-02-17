@@ -106,25 +106,32 @@ This projects main purpose is to detect changes of the page https://www.syncover
     - URL: `https://www.syncovery.com/syncovery9linux/`
     - Inspect UR content:
       - Add `Monitor the contents of a TEXT response`
-      - Add a regEx: `.*v9\.\d{1,2}[a-z]{0,2}.*`
+      - Add a regEx: `.*SyncoveryCL-x86_64-9\.\d{1,2}[a-z]{0,2}-Web\.tar\.gz.*`
     - Schedule (every 15 minutes): `H/15 * * * *`
 - Build
   - Execute shell
     - Command:<br />
 ```bash
 #!/bin/bash
-REGEX='v9\.[0-9]{1,2}[a-z]{0,2}' 
+REGEX='SyncoveryCL-x86_64-9\.[0-9]{1,2}[a-z]{0,2}-Web\.tar\.gz'
+REGEX_VERSION='9\.[0-9]{1,2}[a-z]{0,2}'
 SYNCOVERY=$(curl https://www.syncovery.com/syncovery9linux/)
 
-JENKINS_USERNAME='Stefan'
+JENKINS_USERNAME='YourUsername'
 JENKINS_PASSWORD='your user api token / or password (not recommended)'
 
-if [[ $SYNCOVERY =~ $REGEX ]]; then 
-        VERSION=${BASH_REMATCH[0]}
-        echo $VERSION
-        SYNCOVERY_VERSION=${VERSION:1}
-        echo $SYNCOVERY_VERSION
-        curl -I -X GET -u $JENKINS_USERNAME:$JENKINS_PASSWORD "https://jenkins.domain.tld/job/your_project_name/buildWithParameters?token=<your_project_token>&SYNCOVERY_VERSION=${SYNCOVERY_VERSION}"
+if [[ $SYNCOVERY =~ $REGEX ]]; then
+        echo "found entry: ${BASH_REMATCH[0]}"
+        echo 'extracting version string ...'
+
+        if [[ ${BASH_REMATCH[0]} =~ $REGEX_VERSION ]]; then
+                VERSION=${BASH_REMATCH[0]}
+                echo "got version: $VERSION"
+                curl -I -X GET -u $JENKINS_USERNAME:$JENKINS_PASSWORD "http://127.0.0.1:8080/job/docker-syncoverycl/buildWithParameters?token=<your_project_token>&SYNCOVERY_VERSION=${VERSION}"
+        else
+                echo 'no match found!'
+        fi
+
 else
         echo 'no match found!'
 fi
