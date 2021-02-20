@@ -201,6 +201,6 @@ This project is able to build a syncovery version. For this it needs to be trigg
     - Tag: `latest` / `ubuntu-latest` / `ubuntu-${SYNCOVERY_VERSION}` / `alpine-latest` / `alpine-${SYNCOVERY_VERSION}`
     - Registry credentials: `your hub.docker.com credentials`
     - Build Context: `Ubuntu` / `Apline`
-    - Additional Build Arguments: `--build-arg SYNCOVERY_VERSION=${SYNCOVERY_VERSION} --build-arg SYNCOVERY_DOWNLOADURL=${SYNCOVERY_DOWNLOADURL}`
+    - Additional Build Arguments: `--build-arg SYNCOVERY_DOWNLOADURL=${SYNCOVERY_DOWNLOADURL}`
 
 You can test it by providing a version number like `9.26b`.

@@ -1,5 +1,4 @@
 FROM ubuntu:20.04
-ARG SYNCOVERY_VERSION
 ARG SYNCOVERY_DOWNLOADURL
 LABEL maintainer="Stefan Ruepp <stefan@ruepp.info>"
 LABEL github="https://github.com/MyUncleSam/docker-syncovery/"

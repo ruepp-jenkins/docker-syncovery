@@ -2,7 +2,6 @@
 
 FROM alpine:latest
 #FROM frolvlad/alpine-glibc
-ARG SYNCOVERY_VERSION
 ARG SYNCOVERY_DOWNLOADURL
 LABEL maintainer="Stefan Ruepp <stefan@ruepp.info>"
 LABEL github="https://github.com/MyUncleSam/docker-syncovery/"
