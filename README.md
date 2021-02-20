@@ -98,6 +98,11 @@ As the linux version has no auto update feature, an automatic version check e.g.
 
 So I built two jenkins projects to achive an automatic build.
 
+## Why is version from downloadlink seperated
+In version 9.30b and 9.30c the downloadlink for the linux version was 9.30b but the real version was 9.30c. So the displayed version was changed but the downloadlink keeped remaining. So the displayed in the one we need to use for the real version.
+
+That is why the script below 
+
 ## Downloadpage change detector
 This projects main purpose is to detect changes of the page https://www.syncovery.com/syncovery9linux/. To achive this the URLTrigger plugin (https://plugins.jenkins.io/urltrigger/) is used:
 
@@ -106,7 +111,7 @@ This projects main purpose is to detect changes of the page https://www.syncover
     - URL: `https://www.syncovery.com/syncovery9linux/`
     - Inspect UR content:
       - Add `Monitor the contents of a TEXT response`
-      - Add a regEx: `.*SyncoveryCL-x86_64-9\.\d{1,2}[a-z]{0,2}-Web\.tar\.gz.*`
+      - Add a regEx: `.*v9\.\d{1,2}[a-z]{0,2}.*`
     - Schedule (every 15 minutes): `H/15 * * * *`
 - Build
   - Execute shell
@@ -179,8 +184,12 @@ This project is able to build a syncovery version. For this it needs to be trigg
 - Build Triggers
   - GitHub project: `https://github.com/MyUncleSam/docker-syncovery/`
   - This project is parameterized
-    - Name: `SYNCOVERY_VERSION`
-    - Trim the string: `yes`
+    - #1
+      - Name: `SYNCOVERY_VERSION`
+      - Trim the string: `yes`
+    - #2
+      - Name: `SYNCOVERY_DOWNLOADURL`
+      - Trim the string: `yes`
 - Source Code Management: Git
   - Repository URL: `https://github.com/MyUncleSam/docker-syncovery.git`
 - Build Triggers
@@ -192,6 +201,6 @@ This project is able to build a syncovery version. For this it needs to be trigg
     - Tag: `latest` / `ubuntu-latest` / `ubuntu-${SYNCOVERY_VERSION}` / `alpine-latest` / `alpine-${SYNCOVERY_VERSION}`
     - Registry credentials: `your hub.docker.com credentials`
     - Build Context: `Ubuntu` / `Apline`
-    - Additional Build Arguments: `--build-arg SYNCOVERY_VERSION=${SYNCOVERY_VERSION}`
+    - Additional Build Arguments: `--build-arg SYNCOVERY_VERSION=${SYNCOVERY_VERSION} --build-arg SYNCOVERY_DOWNLOADURL=${SYNCOVERY_DOWNLOADURL}`
 
 You can test it by providing a version number like `9.26b`.
