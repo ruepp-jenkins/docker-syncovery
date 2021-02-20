@@ -113,28 +113,64 @@ This projects main purpose is to detect changes of the page https://www.syncover
     - Command:<br />
 ```bash
 #!/bin/bash
-REGEX='SyncoveryCL-x86_64-9\.[0-9]{1,2}[a-z]{0,2}-Web\.tar\.gz'
-REGEX_VERSION='9\.[0-9]{1,2}[a-z]{0,2}'
-SYNCOVERY=$(curl https://www.syncovery.com/syncovery9linux/)
+DOWNLOAD_REGEX='SyncoveryCL-x86_64-9\.[0-9]{1,2}[a-z]{0,2}-Web\.tar\.gz'
+DOWNLOAD_REGEX_VERSION='9\.[0-9]{1,2}[a-z]{0,2}'
 
-JENKINS_USERNAME='YourUsername'
-JENKINS_PASSWORD='your user api token / or password (not recommended)'
+SHOWN_REGEX_VERSION='v9\.[0-9]{1,2}[a-z]{0,2}'
 
-if [[ $SYNCOVERY =~ $REGEX ]]; then
-        echo "found entry: ${BASH_REMATCH[0]}"
-        echo 'extracting version string ...'
+echo "Get download page content"
+SYNCOVERY=$(curl -s 'https://www.syncovery.com/syncovery9linux/' 2> /dev/null)
 
-        if [[ ${BASH_REMATCH[0]} =~ $REGEX_VERSION ]]; then
-                VERSION=${BASH_REMATCH[0]}
-                echo "got version: $VERSION"
-                curl -I -X GET -u $JENKINS_USERNAME:$JENKINS_PASSWORD "http://127.0.0.1:8080/job/docker-syncoverycl/buildWithParameters?token=<your_project_token>&SYNCOVERY_VERSION=${VERSION}"
+JENKINS_USERNAME='<your_username>'
+JENKINS_PASSWORD='<your_user_api_token> or <your_user_password>'
+
+# internal parameters
+VERSION=""
+DOWNLOADLINK=""
+
+echo ""
+# get downloadlink
+echo 'Extracting download link information'
+if [[ $SYNCOVERY =~ $DOWNLOAD_REGEX ]]; then
+        echo -e "\tfound entry: ${BASH_REMATCH[0]}"
+        echo -e '\textracting download link version ...'
+
+        if [[ ${BASH_REMATCH[0]} =~ $DOWNLOAD_REGEX_VERSION ]]; then
+                DOWNLOAD_VERSION=${BASH_REMATCH[0]}
+                echo -e "\tgot version: $DOWNLOAD_VERSION"
+                DOWNLOADLINK="https://www.syncovery.com/release/SyncoveryCL-x86_64-${DOWNLOAD_VERSION}-Web.tar.gz"
         else
-                echo 'no match found!'
+                echo -e '\tno match found!'
         fi
-
-else
-        echo 'no match found!'
 fi
+
+echo ""
+# get displayed version
+echo "Extracting displayed version information"
+if [[ $SYNCOVERY =~ $SHOWN_REGEX_VERSION ]]; then
+        REGEX_VERSION=${BASH_REMATCH[0]}
+        echo -e "\tfound entry: ${REGEX_VERSION}"
+        VERSION=${REGEX_VERSION:1}
+fi
+
+# writing some information back
+echo ""
+echo "Final information:"
+echo -e "\tDownloadlink: ${DOWNLOADLINK}"
+echo -e "\tVersion: ${VERSION}"
+
+# check if both needed information are available and call jenkins if so
+echo ""
+echo "Calling jenkins build"
+if [[ $VERSION && $DOWNLOADLINK ]]; then
+        echo -e "\tlink and version information are available - calling jenkins"
+        curl -I -X GET -u $JENKINS_USERNAME:$JENKINS_PASSWORD "http://127.0.0.1:8080/job/docker-syncoverycl/buildWithParameters?token=<your_project_token>&SYNCOVERY_VERSION=${VERSION}&SYNCOVERY_DOWNLOADURL=${DOWNLOADLINK}"
+else
+        echo -e "\tmissing information - not calling jenkins"
+fi
+
+echo ""
+echo "Done"
 ```
 
 ## Build project

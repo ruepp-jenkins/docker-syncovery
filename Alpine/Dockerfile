@@ -3,6 +3,7 @@
 FROM alpine:latest
 #FROM frolvlad/alpine-glibc
 ARG SYNCOVERY_VERSION
+ARG SYNCOVERY_DOWNLOADURL
 LABEL maintainer="Stefan Ruepp <stefan@ruepp.info>"
 LABEL github="https://github.com/MyUncleSam/docker-syncovery/"
 
@@ -27,7 +28,7 @@ RUN apk update \
     && rm -R /tmp/* \
     && LD_LIBRARY_PATH=/lib:/usr/local/lib:/usr/bin \
     && export LD_LIBRARY_PATH \
-    && wget -O "$SETUP_TEMP" "https://www.syncovery.com/release/SyncoveryCL-x86_64-${SYNCOVERY_VERSION}-Web.tar.gz" \
+    && wget -O "$SETUP_TEMP" "${SYNCOVERY_DOWNLOADURL}" \
     && tar -xvf "$SETUP_TEMP" --directory /syncovery \
     && rm -f "$SETUP_TEMP" \
     && chmod +x /syncovery/SyncoveryCL \

@@ -1,5 +1,6 @@
 FROM ubuntu:20.04
 ARG SYNCOVERY_VERSION
+ARG SYNCOVERY_DOWNLOADURL
 LABEL maintainer="Stefan Ruepp <stefan@ruepp.info>"
 LABEL github="https://github.com/MyUncleSam/docker-syncovery/"
 
@@ -19,7 +20,7 @@ ADD ./docker-entrypoint.sh /docker/entrypoint.sh
 RUN apt-get update \
     && apt-get install -y bash wget openssl libcrypto++6 libssl-dev sqlite3 libsqlite3-0 libsmbclient tzdata \
     && ln -fs /usr/share/zoneinfo/$TZ /etc/localtime && dpkg-reconfigure -f noninteractive tzdata\
-    && wget -O "$SETUP_TEMP" "https://www.syncovery.com/release/SyncoveryCL-x86_64-${SYNCOVERY_VERSION}-Web.tar.gz" \
+    && wget -O "$SETUP_TEMP" "${SYNCOVERY_DOWNLOADURL}" \
     && tar -xvf "$SETUP_TEMP" --directory /syncovery \
     && rm -f "$SETUP_TEMP" \
     && chmod +x /syncovery/SyncoveryCL \
