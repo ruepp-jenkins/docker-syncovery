@@ -100,8 +100,65 @@ So I built two jenkins projects to achive an automatic build.
 
 ## Why is version from downloadlink seperated
 In version 9.30b and 9.30c the downloadlink for the linux version was 9.30b but the real version was 9.30c. So the displayed version was changed but the downloadlink keeped remaining. So the displayed in the one we need to use for the real version.
+That is why the script below is emiting the download link from the url and the version from the displayed text.
 
-That is why the script below 
+## Using jenkins inside docker
+As I do not want to install jenkins directly on my server I have choosen to use it from the official docker container. But this brings some problems which needed to be solved like to install dependencies. The solution I found online was to make an own image, inherit from the original jenkins image and install all needed components. But I didn't like it and wanted to use the original directly to aovid to manage another image. So I cam up with the following solution:
+
+### custom_entry.sh
+What it is doing:
+  1. install needed dependencies, in this case docker
+  2. login to docker to be able to upload to hub.docker.com
+  3. call the original entrypoint
+
+```bash
+#!/bin/bash
+
+# Install docker
+/usr/bin/apt-get update && apt-get install -y apt-transport-https ca-certificates curl gnupg2 software-properties-common gnupg-agent
+/usr/bin/curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
+/usr/bin/apt-key fingerprint 0EBFCD88
+
+add-apt-repository \
+       "deb [arch=amd64] https://download.docker.com/linux/debian \
+       $(lsb_release -cs) \
+       stable"
+
+/usr/bin/apt-get update && apt-get install -y docker-ce docker-ce-cli containerd.io
+
+# Istall other things
+apt-get install -y jq
+
+# Login to docker (you need to place a file with your password into the home directory - see below)
+cat /var/jenkins_home/docker_password.txt | docker login --username <your_hub_docker_com_username> --password-stdin
+
+# execute the original entrypoint to start jenkins
+/sbin/tini -- /usr/local/bin/jenkins.sh
+```
+
+### docker-compose.yml
+Inside the docker-compose.yml I changed only the following:
+  - change the entry path, to be able to execute my `custom_entry.sh` on start
+  - run it as root as docker needs root to function inside the container
+  - mount the needed paths (one of them is the docker.sock to be able to do docker stuff from inside the container)
+
+```docker-compose.yml
+version: '3.5'
+services:
+        jenkins:
+                container_name: jenkins
+                hostname: jenkins
+                domainname: domain.tld
+                image: jenkins/jenkins
+                volumes:
+                        - ./jenkins_home:/var/jenkins_home
+                        - /var/run/docker.sock:/var/run/docker.sock
+                restart: unless-stopped
+                environment:
+                        TZ: Europe/Berlin
+                user: "0:0"
+                entrypoint: /var/jenkins_home/ruepp/custom_entry.sh
+```
 
 ## Downloadpage change detector
 This projects main purpose is to detect changes of the page https://www.syncovery.com/syncovery9linux/. To achive this the URLTrigger plugin (https://plugins.jenkins.io/urltrigger/) is used:
