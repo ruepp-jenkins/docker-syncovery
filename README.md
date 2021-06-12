@@ -25,9 +25,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 # Changes to original Image
-- Changed distribution from CentOS to Ubuntu 20.04.
-- Update to newer versions of SyncoveryCL
-- Removed support for unraid (unable to test as I do not have one)
+The complete project changed over time and it can no longer be compared to the original source.
+
+# Features
+This version comes with:
+- Syncovery
+- Guardian
+- Remove Service
+
+So you can use all components as you need
 
 # Paths
 There are only two paths which are used:
@@ -39,6 +45,12 @@ If your syncovery should work with files on the host filesystem, make sure to bi
 # Environment variables (with default values)
 - TZ=Europe/Berlin
     - Set your timezone here (see Time / Date below)
+- SYNCOVERY_HOME=/config
+    - Changes the default location of syncovery config files (changing should work but was never tested - so use at your own risk)
+- DEBIAN_FRONTEND=noninteractive
+    - NO EFFECTS, only needed for build process
+- SETUP_TEMP=/tmp/installers/
+    - NO EFFECTS, only needed for build process
 
 # Time / Date
 If you do not change your timezone (see environment variables) syncovery will user Europe/Berlin as default timezone. But if you want to make sure syncovery is using the correct time and date, you need to specify your timezone.
@@ -48,6 +60,12 @@ Examples:
 - Europe/Berlin
 - Africa/Windhoek
 - America/Costa_Rica
+
+# Ports
+This image uses the default ports:
+- Syncovery: 8999
+- Guardian: 8900
+- RemoteService: 8949
 
 # Docker compose (example)
 
@@ -66,22 +84,22 @@ Examples:
                 TZ: Europe/Berlin
            ports:
                 - 8999:8999
+                - 8900:8900
+                - 8949:8949
 
 # Docker run (exmample)
 
     docker run -d --name=syncovery -v /opt/docker/syncovery/config:/config -v /opt/docker/syncovery/tmp:/tmp -p 8999:8999 stefanruepp/syncoverycl
 
-# Dockerfiles
+# Tags
 
-Inside this repository are two dockerfiles:
-- Dockerfile: Ubuntu based image
-- Alpine/Dockerfile: Alpine base image (read below!)
+Several different tags are built to give you the possibility to use any specific version. But be careful, I do not have a docker subscription, so versions could disappear. As I only build the newest versions they are then lost and are not coming back.
 
-Alpine Dockerfile was built by me to have a smaller image. But all in all it is not smaller and feels a little bit dirty. For now it is generated in an own tag. Feel free to use it but it is not supported or tested by me. I highly suggest to use the normal ubuntu image!
+At the moment I build Ubuntu and Alpine images (attention: Alpine is no longer supported nor tested anymore - use at your own risk). Both system gets a main version tag like 'Ubuntu-v9' and a version tag like 'Ubuntu-9.35c'. And of course there is always the 'latest' tag as known by other images.
 
 # Opening webinterface
 1. Run "Docker compose" or "Docker run".
-2. Go to http://docker-host:8999 (if docker runs local: http://localhost:8999)
+2. Go to http://docker-host:8999 (if docker runs local: http://localhost:8999) - for guardian http://docker-host:8900 and remote service http://docker-host:8949
 3. Login
     - Username: default
     - Password: pass
@@ -94,13 +112,10 @@ hlince original github repository: https://github.com/Howard3/docker-syncovery
 # Automatic builds
 Since 2021 this docker images are built using https://www.jenkins.io/ (this is my first jenkins integration, so if you have some advices - please let me know).
 
-As the linux version has no auto update feature, an automatic version check e.g. by text, json or xml is not possible. The only way is to monitor the download URL: https://www.syncovery.com/syncovery9linux/
-
-So I built two jenkins projects to achive an automatic build.
-
-## Why is version from downloadlink seperated
-In version 9.30b and 9.30c the downloadlink for the linux version was 9.30b but the real version was 9.30c. So the displayed version was changed but the downloadlink keeped remaining. So the displayed in the one we need to use for the real version.
-That is why the script below is emiting the download link from the url and the version from the displayed text.
+To achive that the following urls are used to parse the most up2date versions:
+- https://www.syncovery.com/linver_x86_64-Web.tar.gz.txt
+- https://www.syncovery.com/linver_guardian_x86_64.tar.gz.txt
+- https://www.syncovery.com/linver_rs_x86_64.tar.gz.txt
 
 ## Using jenkins inside docker
 As I do not want to install jenkins directly on my server I have choosen to use it from the official docker container. But this brings some problems which needed to be solved like to install dependencies. The solution I found online was to make an own image, inherit from the original jenkins image and install all needed components. But I didn't like it and wanted to use the original directly to aovid to manage another image. So I cam up with the following solution:
@@ -160,84 +175,67 @@ services:
                 entrypoint: /var/jenkins_home/ruepp/custom_entry.sh
 ```
 
-## Downloadpage change detector
-This projects main purpose is to detect changes of the page https://www.syncovery.com/syncovery9linux/. To achive this the URLTrigger plugin (https://plugins.jenkins.io/urltrigger/) is used:
+## Project
+Jenkins is triggered by the URLTrigger (plugin). This plugin checks if there is a new version. If there is one, a bash script extracts all needes version and download links. These information are then provided as additional build arguments to the docker build command. Using them the Dockerfile is always downloading the correct and most up2date versions to be able to build the image.
 
 - Build Triggers
+  - GitHub project: `https://github.com/MyUncleSam/docker-syncovery/`
   - URLTrigger
-    - URL: `https://www.syncovery.com/syncovery9linux/`
-    - Inspect UR content:
-      - Add `Monitor the contents of a TEXT response`
-      - Add a regEx: `.*v9\.\d{1,2}[a-z]{0,2}.*`
-    - Schedule (every 15 minutes): `H/15 * * * *`
-- Build
-  - Execute shell
-    - Command:<br />
+    - URL: `https://www.syncovery.com/linver_x86_64-Web.tar.gz.txt`
+    - Inspect URL content:
+      - Monitor a change of the content
+    - Schedule: `H/15 * * * *` (every 15 minutes)
+  - Build environment
+    - Generate environment variables from script (Environment Script Plugin)
+      - Unix script
+      - Script content:<br />
 ```bash
 #!/bin/bash
-DOWNLOAD_REGEX='SyncoveryCL-x86_64-9\.[0-9]{1,2}[a-z]{0,2}-Web\.tar\.gz'
-DOWNLOAD_REGEX_VERSION='9\.[0-9]{1,2}[a-z]{0,2}'
+SYNCOVERY_REGEX='https://www\.syncovery\.com/release/SyncoveryCL-x86_64-(([1-9][0-9]?)\.[0-9]{1,2}[a-z]{0,2})-Web\.tar\.gz'
+REMOTE_REGEX='https://www\.syncovery\.com/release/SyncoveryRS-x86_64-([1-9][0-9]?\.[0-9]{1,2}[a-z]{0,2})\.tar\.gz'
+GUARD_REGEX='https://www\.syncovery\.com/release/SyncoveryGuardian-x86_64-([1-9][0-9]?\.[0-9]{1,2}[a-z]{0,2})\.tar\.gz'
 
-SHOWN_REGEX_VERSION='v9\.[0-9]{1,2}[a-z]{0,2}'
-
-echo "Get download page content"
-SYNCOVERY=$(curl -s 'https://www.syncovery.com/syncovery9linux/' 2> /dev/null)
-
-JENKINS_USERNAME='<your_username>'
-JENKINS_PASSWORD='<your_user_api_token> or <your_user_password>'
+SYNCOVERY=$(curl -s 'https://www.syncovery.com/linver_x86_64-Web.tar.gz.txt' 2> /dev/null)
+REMOTE=$(curl -s 'https://www.syncovery.com/linver_rs_x86_64.tar.gz.txt' 2> /dev/null)
+GUARD=$(curl -s 'https://www.syncovery.com/linver_guardian_x86_64.tar.gz.txt' 2> /dev/null)
 
 # internal parameters
-VERSION=""
-DOWNLOADLINK=""
+MAIN_VERSION=""
+SYNCOVERY_VERSION=""
+SYNCOVERY_DOWNLOADLINK=""
+REMOTE_VERSION=""
+REMOTE_DOWNLOADLINK=""
+GUARD_VERSION=""
+GUARD_DOWNLOADLINK=""
 
-echo ""
-# get downloadlink
-echo 'Extracting download link information'
-if [[ $SYNCOVERY =~ $DOWNLOAD_REGEX ]]; then
-        echo -e "\tfound entry: ${BASH_REMATCH[0]}"
-        echo -e '\textracting download link version ...'
-
-        if [[ ${BASH_REMATCH[0]} =~ $DOWNLOAD_REGEX_VERSION ]]; then
-                DOWNLOAD_VERSION=${BASH_REMATCH[0]}
-                echo -e "\tgot version: $DOWNLOAD_VERSION"
-                DOWNLOADLINK="https://www.syncovery.com/release/SyncoveryCL-x86_64-${DOWNLOAD_VERSION}-Web.tar.gz"
-        else
-                echo -e '\tno match found!'
-        fi
+# syncovery
+if [[ $SYNCOVERY =~ $SYNCOVERY_REGEX ]]; then
+    MAIN_VERSION=${BASH_REMATCH[2]}
+    SYNCOVERY_VERSION=${BASH_REMATCH[1]}
+    SYNCOVERY_DOWNLOADLINK=${BASH_REMATCH[0]}
 fi
 
-echo ""
-# get displayed version
-echo "Extracting displayed version information"
-if [[ $SYNCOVERY =~ $SHOWN_REGEX_VERSION ]]; then
-        REGEX_VERSION=${BASH_REMATCH[0]}
-        echo -e "\tfound entry: ${REGEX_VERSION}"
-        VERSION=${REGEX_VERSION:1}
+# remote
+if [[ $REMOTE =~ $REMOTE_REGEX ]]; then
+    REMOTE_VERSION=${BASH_REMATCH[1]}
+    REMOTE_DOWNLOADLINK=${BASH_REMATCH[0]}
 fi
 
-# writing some information back
-echo ""
-echo "Final information:"
-echo -e "\tDownloadlink: ${DOWNLOADLINK}"
-echo -e "\tVersion: ${VERSION}"
+# guardian
+if [[ $GUARD =~ $GUARD_REGEX ]]; then
+    GUARD_VERSION=${BASH_REMATCH[1]}
+    GUARD_DOWNLOADLINK=${BASH_REMATCH[0]}
+fi
 
 # check if both needed information are available and call jenkins if so
-echo ""
-echo "Calling jenkins build"
-if [[ $VERSION && $DOWNLOADLINK ]]; then
-        echo -e "\tlink and version information are available - calling jenkins"
-        curl -I -X GET -u $JENKINS_USERNAME:$JENKINS_PASSWORD "http://127.0.0.1:8080/job/docker-syncoverycl/buildWithParameters?token=<your_project_token>&SYNCOVERY_VERSION=${VERSION}&SYNCOVERY_DOWNLOADURL=${DOWNLOADLINK}"
-else
-        echo -e "\tmissing information - not calling jenkins"
-fi
-
-echo ""
-echo "Done"
+echo MAIN_VERSION=${MAIN_VERSION}
+echo SYNCOVERY_VERSION=${SYNCOVERY_VERSION}
+echo SYNCOVERY_DOWNLOADLINK=${SYNCOVERY_DOWNLOADLINK}
+echo REMOTE_VERSION=${REMOTE_VERSION}
+echo REMOTE_DOWNLOADLINK=${REMOTE_DOWNLOADLINK}
+echo GUARD_VERSION=${GUARD_VERSION}
+echo GUARD_DOWNLOADLINK=${GUARD_DOWNLOADLINK}
 ```
-
-## Build project
-This project is able to build a syncovery version. For this it needs to be triggered from outside by providing the version. In this case it is triggered by the project above.
-
 - Build Triggers
   - GitHub project: `https://github.com/MyUncleSam/docker-syncovery/`
   - This project is parameterized
@@ -255,9 +253,8 @@ This project is able to build a syncovery version. For this it needs to be trigg
 - Build
   - Docker Build and Publish
     - Repository Name: `stefanruepp/syncoverycl`
-    - Tag: `latest` / `ubuntu-latest` / `ubuntu-${SYNCOVERY_VERSION}` / `alpine-latest` / `alpine-${SYNCOVERY_VERSION}`
+    - Tag: `latest` / `ubuntu-latest` / `ubuntu-v${MAIN_VERSION}` / `ubuntu-${SYNCOVERY_VERSION}` / `alpine-latest` / `alpine-v${MAIN_VERSION}` / `alpine-${SYNCOVERY_VERSION}`
     - Registry credentials: `your hub.docker.com credentials`
     - Build Context: `Ubuntu` / `Apline`
-    - Additional Build Arguments: `--build-arg SYNCOVERY_DOWNLOADURL=${SYNCOVERY_DOWNLOADURL}`
+    - Additional Build Arguments: `--build-arg SYNCOVERY_DOWNLOADLINK=${SYNCOVERY_DOWNLOADLINK} --build-arg GUARD_DOWNLOADLINK=${GUARD_DOWNLOADLINK} --build-arg REMOTE_DOWNLOADLINK=${REMOTE_DOWNLOADLINK}`
 
-You can test it by providing a version number like `9.26b`.
