@@ -37,7 +37,6 @@ function start() {
   /syncovery/SyncoveryRS start
 }
 
-echo "Starting gosbot server"
 start
 tail -f ${SYNCOVERY_HOME}/.Syncovery/WebGUI.log &
 
