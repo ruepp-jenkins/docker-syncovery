@@ -20,7 +20,7 @@ RUN mkdir -p /docker/tmp \
     && mkdir -p $SETUP_TEMP \
     && apt-get update \
     && apt-get install --no-install-recommends -y bash wget openssl ca-certificates libcrypto++6 libssl-dev sqlite3 libsqlite3-0 libsmbclient tzdata \
-    && apt-get-install openssh-client -y
+    && apt-get-install openssh-client -y \
     && ln -fs /usr/share/zoneinfo/$TZ /etc/localtime && dpkg-reconfigure -f noninteractive tzdata \
     && apt-get autoclean -y && apt-get clean -y && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/* \
