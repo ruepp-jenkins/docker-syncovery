@@ -1,0 +1,2 @@
+# ignore files downloaded from build.sh
+linver_*.tar.gz.txt
