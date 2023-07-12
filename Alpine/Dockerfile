@@ -1,4 +1,4 @@
-FROM frolvlad/alpine-glibc:glibc-2.34
+FROM frolvlad/alpine-glibc:alpine-3.13
 
 ARG SYNCOVERY_DOWNLOADLINK
 ARG GUARD_DOWNLOADLINK
