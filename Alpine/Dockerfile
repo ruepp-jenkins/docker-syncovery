@@ -1,4 +1,4 @@
-FROM frolvlad/alpine-glibc:latest
+FROM frolvlad/alpine-glibc:alpine-3.19
 
 ARG SYNCOVERY_DOWNLOADLINK
 ARG GUARD_DOWNLOADLINK
@@ -19,7 +19,7 @@ RUN mkdir -p /docker/tmp \
     && mkdir -p /syncovery \
     && mkdir -p $SETUP_TEMP \
     #&& apk update \
-    && apk add --no-cache bash wget openssl libressl-dev zlib zlib-dev sqlite sqlite-libs libcrypto1.1 libsmbclient openssh-client \
+    && apk add --no-cache bash wget openssl libressl-dev zlib zlib-dev sqlite sqlite-libs libcrypto3 libssl3 libsmbclient openssh-client \
     #&& wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub \
     #&& wget -q -O /tmp/glibc.apk https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.33-r0/glibc-2.33-r0.apk \
     #&& wget -q -O /tmp/glibc-bin.apk https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.33-r0/glibc-bin-2.33-r0.apk \
