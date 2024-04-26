@@ -11,8 +11,6 @@ function terminator() {
 }
 
 function stop() {
-  /syncovery/SyncoveryRS stop
-  /syncovery/SyncoveryGuardian stop
   /syncovery/SyncoveryCL stop
 }
 
@@ -28,13 +26,6 @@ function start() {
 
   echo "Starting Syncovery"
   /syncovery/SyncoveryCL start
-
-  # do not start guardian as it seems to be started from SyncoveryCL
-  #echo "Starting Guardian"
-  #/syncovery/SyncoveryGuardian start
-
-  echo "Starting RemoteService"
-  /syncovery/SyncoveryRS start
 }
 
 start
