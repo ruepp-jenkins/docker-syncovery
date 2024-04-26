@@ -38,9 +38,6 @@ pipeline {
         )
     }
     stages {
-        stage('Login Docker') {
-
-        }
         stage('Checkout') {
             steps {
                 git "https://github.com/MyUncleSam/docker-syncovery.git"
