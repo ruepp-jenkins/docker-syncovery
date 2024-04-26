@@ -1,25 +1,26 @@
+properties(
+    [
+        githubProjectProperty(
+            displayName: 'docker-syncovery',
+            projectUrlStr: 'https://github.com/MyUncleSam/docker-syncovery/'
+        ),
+        parameters(
+            [
+                string(
+                    name: 'IMAGE_FULLNAME',
+                    defaultValue: 'stefanruepp/syncoverycl'
+                )
+            ]
+        )
+    ]
+)
+
 pipeline {
     agent any
-
-    properties(
-        [
-            githubProjectProperty(
-                displayName: 'docker-syncovery',
-                projectUrlStr: 'https://github.com/MyUncleSam/docker-syncovery/'
-            ),
-            parameters(
-                [
-                    string(
-                        name: 'IMAGE_FULLNAME',
-                        defaultValue: 'stefanruepp/syncoverycl'
-                    )
-                ]
-            )
-        ]
-    )
+    
     triggers {
         URLTrigger(
-            cronTabSpec: '* * * * *',
+            cronTabSpec: 'H/30 * * * *',
             entries: [
                 URLTriggerEntry( 
                     url: 'https://www.syncovery.com/linver_x86_64-Web.tar.gz.txt',
@@ -37,6 +38,9 @@ pipeline {
         )
     }
     stages {
+        stage('Login Docker') {
+
+        }
         stage('Checkout') {
             steps {
                 git "https://github.com/MyUncleSam/docker-syncovery.git"
@@ -44,8 +48,6 @@ pipeline {
         }
         stage('Build') {
             steps {
-                sh 'pwd'
-                sh 'ls -lah'
                 sh 'chmod +x scripts/*.sh'
                 sh './scripts/start.sh'
             }
