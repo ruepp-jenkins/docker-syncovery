@@ -33,6 +33,16 @@ pipeline {
                     contentTypes: [
                         MD5Sum()
                     ]
+                ),
+                URLTriggerEntry( 
+                    url: 'https://hub.docker.com/v2/namespaces/library/repositories/ubuntu/tags/24.04',
+                    contentTypes: [
+                        JsonContent(
+                            [
+                                JsonContentEntry( jsonPath: '$.last_updated' )
+                            ]
+                        )
+                    ]
                 )
             ]
         )
