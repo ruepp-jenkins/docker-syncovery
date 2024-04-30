@@ -1,6 +1,8 @@
-# Original work by hlince
+# Project
 
-The first version was a copy of https://hub.docker.com/r/hlince/syncovery but with up2date SyncoveryCL versions. Now after some time I changed a little bit more (see next topic for details).
+Github: https://github.com/MyUncleSam/docker-syncovery
+
+Docker: https://hub.docker.com/repository/docker/stefanruepp/syncoverycl
 
 # License
 
@@ -26,20 +28,6 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-# Changes to original Image
-
-The complete project changed over time and it can no longer be compared to the original source.
-
-# Features
-
-This version comes with:
-
-- Syncovery
-- Guardian
-- Remove Service
-
-So you can use all components as you need
-
 # Paths
 
 There are only two paths which are used:
@@ -55,10 +43,6 @@ If your syncovery should work with files on the host filesystem, make sure to bi
   - Set your timezone here (see Time / Date below)
 - SYNCOVERY_HOME=/config
   - Changes the default location of syncovery config files (changing should work but was never tested - so use at your own risk)
-- DEBIAN_FRONTEND=noninteractive
-  - NO EFFECTS, only needed for build process
-- SETUP_TEMP=/tmp/installers/
-  - NO EFFECTS, only needed for build process
 
 # Time / Date
 
@@ -76,8 +60,6 @@ Examples:
 This image uses the default ports:
 
 - Syncovery: 8999
-- Guardian: 8900
-- RemoteService: 8949
 
 # Docker compose (example)
 
@@ -90,7 +72,6 @@ This image uses the default ports:
            image: stefanruepp/syncoverycl
            volumes:
                - ./config:/config
-               - ./tmp:/tmp
                - /:/server:ro
            environment:
                 TZ: Europe/Berlin
@@ -101,27 +82,23 @@ This image uses the default ports:
 
 # Docker run (exmample)
 
-    docker run -d --name=syncovery -v /opt/docker/syncovery/config:/config -v /opt/docker/syncovery/tmp:/tmp -p 8999:8999 stefanruepp/syncoverycl
+    docker run -d --name=syncovery -v /opt/docker/syncovery/config:/config -v /:/server:ro -p 8999:8999 stefanruepp/syncoverycl
 
 # Tags
 
 Several different tags are built to give you the possibility to use any specific version. But be careful, I do not have a docker subscription, so versions could disappear. As I only build the newest versions they are then lost and are not coming back.
 
-At the moment I build Ubuntu and Alpine images (attention: Alpine is no longer supported nor tested anymore - use at your own risk). Both system gets a main version tag like 'Ubuntu-v9' and a version tag like 'Ubuntu-9.35c'. And of course there is always the 'latest' tag as known by other images.
-
 # Opening webinterface
 
 1. Run "Docker compose" or "Docker run".
 2. Go to http://docker-host:8999 (if docker runs local: http://localhost:8999) - for guardian http://docker-host:8900 and remote service http://docker-host:8949
-3. Login
+3. Login (use default credentials from syncovery documentation, they should be)
    - Username: default
    - Password: pass
 
 # Github
 
 repository of this container: https://github.com/MyUncleSam/docker-syncovery
-
-hlince original github repository: https://github.com/Howard3/docker-syncovery
 
 # Automatic builds
 
