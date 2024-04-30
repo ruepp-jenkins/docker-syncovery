@@ -16,30 +16,31 @@ properties(
 )
 
 pipeline {
-    agent any
-    
+    agent {
+        label 'docker'
+    }
     triggers {
         URLTrigger(
             cronTabSpec: 'H/30 * * * *',
             entries: [
-                URLTriggerEntry( 
+                URLTriggerEntry(
                     url: 'https://www.syncovery.com/linver_x86_64-Web.tar.gz.txt',
                     contentTypes: [
                         MD5Sum()
                     ]
                 ),
-                URLTriggerEntry( 
+                URLTriggerEntry(
                     url: 'https://www.syncovery.com/linver_aarch64.tar.gz.txt',
                     contentTypes: [
                         MD5Sum()
                     ]
                 ),
-                URLTriggerEntry( 
+                URLTriggerEntry(
                     url: 'https://hub.docker.com/v2/namespaces/library/repositories/ubuntu/tags/24.04',
                     contentTypes: [
                         JsonContent(
                             [
-                                JsonContentEntry( jsonPath: '$.last_updated' )
+                                JsonContentEntry(jsonPath: '$.last_updated')
                             ]
                         )
                     ]
@@ -50,7 +51,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git "https://github.com/MyUncleSam/docker-syncovery.git"
+                git 'https://github.com/MyUncleSam/docker-syncovery.git'
             }
         }
         stage('Build') {
