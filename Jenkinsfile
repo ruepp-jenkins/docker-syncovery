@@ -51,7 +51,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/MyUncleSam/docker-syncovery.git'
+                git branch: env.BRANCH_NAME, url: env.GIT_URL
             }
         }
         stage('Build') {
