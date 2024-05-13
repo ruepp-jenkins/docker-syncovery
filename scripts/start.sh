@@ -24,7 +24,7 @@ else
     docker buildx build \
         --build-arg SYNCOVERY_AMD64_DOWNLOADLINK=${SYNCOVERY_AMD64_DOWNLOADLINK} \
         --build-arg SYNCOVERY_ARM64_DOWNLOADLINK=${SYNCOVERY_ARM64_DOWNLOADLINK} \
-        --platform linux/amd64 \
+        --platform linux/amd64,linux/arm64 \
         -t ${IMAGE_FULLNAME}-test:${BRANCH_NAME}-ubuntu-v${SYNCOVERY_MAIN_VERSION} \
         -t ${IMAGE_FULLNAME}-test:${BRANCH_NAME}-ubuntu-${SYNCOVERY_VERSION} \
         -t ${IMAGE_FULLNAME}-test:${BRANCH_NAME}-${SYNCOVERY_MAIN_VERSION} \
