@@ -13,6 +13,7 @@ docker buildx build \
     --platform linux/amd64,linux/arm64 \
     -t ${IMAGE_FULLNAME}:ubuntu-v${SYNCOVERY_MAIN_VERSION} \
     -t ${IMAGE_FULLNAME}:ubuntu-${SYNCOVERY_VERSION} \
+    -t ${IMAGE_FULLNAME}:ubuntu-latest \
     -t ${IMAGE_FULLNAME}:${SYNCOVERY_MAIN_VERSION} \
     -t ${IMAGE_FULLNAME}:${SYNCOVERY_VERSION} \
     -t ${IMAGE_FULLNAME}:latest \
