@@ -63,26 +63,28 @@ This image uses the default ports:
 
 # Docker compose (example)
 
-    version: '3.5'
-    services:
-       syncoverycl:
-           container_name: syncoverycl
-           hostname: syncoverycl
-           restart: unless-stopped
-           image: stefanruepp/syncoverycl
-           volumes:
-               - ./config:/config
-               - /:/server:ro
-           environment:
-                TZ: Europe/Berlin
-           ports:
-                - 8999:8999
-                - 8900:8900
-                - 8949:8949
+```yaml
+services:
+  syncoverycl:
+    container_name: syncoverycl
+    hostname: syncoverycl
+    restart: unless-stopped
+    image: stefanruepp/syncoverycl
+    volumes:
+      - ./config:/config
+      - /:/server:ro
+    environment:
+      TZ: Europe/Berlin
+    ports:
+      - 8999:8999
+      - 8889:8889
+```
 
 # Docker run (exmample)
 
-    docker run -d --name=syncovery -v /opt/docker/syncovery/config:/config -v /:/server:ro -p 8999:8999 stefanruepp/syncoverycl
+```sh
+docker run -d --name=syncovery -v /opt/docker/syncovery/config:/config -v /:/server:ro -p 8999:8999 stefanruepp/syncoverycl
+```
 
 # Tags
 
