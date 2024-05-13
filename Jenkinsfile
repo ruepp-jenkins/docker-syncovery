@@ -3,14 +3,6 @@ properties(
         githubProjectProperty(
             displayName: 'docker-syncovery',
             projectUrlStr: 'https://github.com/MyUncleSam/docker-syncovery/'
-        ),
-        parameters(
-            [
-                string(
-                    name: 'IMAGE_FULLNAME',
-                    defaultValue: 'stefanruepp/syncoverycl'
-                )
-            ]
         )
     ]
 )
@@ -18,6 +10,9 @@ properties(
 pipeline {
     agent {
         label 'docker'
+    }
+    environment {
+        IMAGE_FULLNAME = 'stefanruepp/syncoverycl'
     }
     triggers {
         URLTrigger(
@@ -51,7 +46,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/MyUncleSam/docker-syncovery.git'
+                git branch: env.BRANCH_NAME, url: env.GIT_URL
             }
         }
         stage('Build') {
