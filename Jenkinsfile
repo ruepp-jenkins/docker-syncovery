@@ -3,7 +3,8 @@ properties(
         githubProjectProperty(
             displayName: 'docker-syncovery',
             projectUrlStr: 'https://github.com/MyUncleSam/docker-syncovery/'
-        )
+        ),
+        disableConcurrentBuilds()
     ]
 )
 
