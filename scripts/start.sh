@@ -19,6 +19,7 @@ then
         -t ${IMAGE_FULLNAME}:${SYNCOVERY_MAIN_VERSION} \
         -t ${IMAGE_FULLNAME}:${SYNCOVERY_VERSION} \
         -t ${IMAGE_FULLNAME}:latest \
+        --pull \
         --push .
 else
     docker buildx build \
@@ -29,6 +30,7 @@ else
         -t ${IMAGE_FULLNAME}-test:${BRANCH_NAME}-ubuntu-${SYNCOVERY_VERSION} \
         -t ${IMAGE_FULLNAME}-test:${BRANCH_NAME}-${SYNCOVERY_MAIN_VERSION} \
         -t ${IMAGE_FULLNAME}-test:${BRANCH_NAME}-${SYNCOVERY_VERSION} \
+        --pull \
         --push .
 fi
 
