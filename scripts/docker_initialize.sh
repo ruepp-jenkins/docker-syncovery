@@ -2,7 +2,7 @@
 set -e
 echo "Initialize docker"
 
-echo ${DOCKER_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin
+echo ${DOCKER_API_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin
 docker buildx install
 
 set +e

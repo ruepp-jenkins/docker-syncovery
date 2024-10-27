@@ -14,7 +14,8 @@ pipeline {
     }
 
     environment {
-        IMAGE_FULLNAME = 'stefanruepp/syncoverycl'
+        IMAGE_FULLNAME = 'stefanruepp/syncoverycl',
+        DOCKER_API_PASSWORD = credentials('DOCKER_API_PASSWORD')
     }
 
     triggers {
@@ -68,6 +69,7 @@ pipeline {
                 link: env.BUILD_URL,
                 title: JOB_NAME,
                 webhookURL: DISCORD_WEBHOOK
+            cleanWs()
         }
     }
 }
