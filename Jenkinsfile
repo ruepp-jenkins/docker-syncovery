@@ -14,7 +14,7 @@ pipeline {
     }
 
     environment {
-        IMAGE_FULLNAME = 'stefanruepp/syncoverycl',
+        IMAGE_FULLNAME = 'stefanruepp/syncoverycl'
         DOCKER_API_PASSWORD = credentials('DOCKER_API_PASSWORD')
     }
 
