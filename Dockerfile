@@ -5,8 +5,8 @@ ARG BUILDPLATFORM
 ARG SYNCOVERY_AMD64_DOWNLOADLINK
 ARG SYNCOVERY_ARM64_DOWNLOADLINK
 
-LABEL maintainer="Stefan Ruepp <stefan@ruepp.info>"
-LABEL github="https://github.com/MyUncleSam/docker-syncovery/"
+LABEL maintainer="Stefan Ruepp"
+LABEL github="https://github.com/ruepp-jenkins/docker-refacto"
 LABEL TARGETPLATFORM=${TARGETPLATFORM}
 LABEL BUILDPLATFORM=${BUILDPLATFORM}
 
