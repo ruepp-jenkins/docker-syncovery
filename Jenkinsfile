@@ -60,6 +60,16 @@ pipeline {
                 sh './scripts/start.sh'
             }
         }
+        stage('SBOM generation') {
+            steps {
+                sh "docker run --rm -v /opt/docker/jenkins/jenkins_ws:/home/jenkins/workspace aquasec/trivy image --format cyclonedx --output ${WORKSPACE}/bom.xml --scanners vuln,misconfig,secret,license ${IMAGE_FULLNAME}:latest"
+            }
+        }
+        stage('DependencyTracker') {
+            steps {
+                dependencyTrackPublisher artifact: 'bom.xml', projectName: env.JOB_NAME, projectVersion: 'latest', synchronous: true, projectProperties: [tags: ['image']]
+            }
+        }
     }
 
     post {
