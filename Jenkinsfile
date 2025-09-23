@@ -62,7 +62,7 @@ pipeline {
         }
         stage('SBOM generation') {
             steps {
-                sh "docker run --rm -v /opt/docker/jenkins/jenkins_ws:/home/jenkins/workspace aquasec/trivy image --format cyclonedx --output ${WORKSPACE}/bom.xml --scanners vuln,misconfig,secret,license ${IMAGE_FULLNAME}:latest"
+                sh "docker run --rm -v /opt/docker/jenkins/jenkins_ws:/home/jenkins/workspace aquasec/trivy image --server http://172.20.89.4:4954 --format cyclonedx --output ${WORKSPACE}/bom.xml --scanners vuln,misconfig,secret,license ${IMAGE_FULLNAME}:latest"
             }
         }
         stage('DependencyTracker') {
