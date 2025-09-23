@@ -16,6 +16,7 @@ pipeline {
     environment {
         IMAGE_FULLNAME = 'stefanruepp/syncoverycl'
         DOCKER_API_PASSWORD = credentials('DOCKER_API_PASSWORD')
+        TRIVY_TOKEN = credentials('TRIVY_TOKEN')
     }
 
     triggers {
@@ -62,7 +63,7 @@ pipeline {
         }
         stage('SBOM generation') {
             steps {
-                sh "docker run --rm -v /opt/docker/jenkins/jenkins_ws:/home/jenkins/workspace aquasec/trivy image --server http://172.20.89.4:4954 --format cyclonedx --output ${WORKSPACE}/bom.xml --scanners vuln,misconfig,secret,license ${IMAGE_FULLNAME}:latest"
+                sh "docker run --rm -v /opt/docker/jenkins/jenkins_ws:/home/jenkins/workspace aquasec/trivy image --server http://172.20.89.4:4954 --token ${TRIVY_TOKEN} --format cyclonedx --output ${WORKSPACE}/bom.xml --scanners vuln,misconfig,secret,license ${IMAGE_FULLNAME}:latest"
             }
         }
         stage('DependencyTracker') {
