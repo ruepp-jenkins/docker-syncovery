@@ -4,7 +4,7 @@ properties(
             displayName: 'docker-syncovery',
             projectUrlStr: 'https://github.com/MyUncleSam/docker-syncovery/'
         ),
-        disableConcurrentBuilds()
+        disableConcurrentBuilds(abortPrevious: true)
     ]
 )
 
