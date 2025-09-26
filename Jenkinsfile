@@ -74,7 +74,8 @@ pipeline {
                     // root project body
                     def body = groovy.json.JsonOutput.toJson([
                         name: "${env.JOB_NAME}",
-                        classifier: "NONE"
+                        classifier: "NONE",
+                        collectionLogic: "AGGREGATE_LATEST_VERSION_CHILDREN"
                     ])
 
                     // create root project
