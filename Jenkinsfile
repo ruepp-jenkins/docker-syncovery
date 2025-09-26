@@ -68,7 +68,7 @@ pipeline {
         }
         stage('DependencyTracker') {
             steps {
-                dependencyTrackPublisher artifact: 'bom.xml', projectName: env.JOB_NAME, projectVersion: 'latest', synchronous: true, projectProperties: [tags: ['image']]
+                dependencyTrackPublisher artifact: 'bom.xml', projectName: env.JOB_NAME, projectVersion: env.BUILD_NUMBER, synchronous: true, projectProperties: [isLatest: true, tags: ['image']]
             }
         }
     }
