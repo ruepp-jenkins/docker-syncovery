@@ -79,13 +79,13 @@ pipeline {
 
                     // create root project
                     httpRequest contentType: 'APPLICATION_JSON',
-                                httpMode: 'PUT',
-                                customHeaders: [
-                                    [name: 'X-Api-Key', value: env.DEPENDENCYTRACK_API_TOKEN, maskValue: true]
-                                ],
-                                requestBody: body,
-                                url: "${DEPENDENCYTRACK_HOST}/api/v1/project",
-                                validResponseCodes: '200:299,409' // 409: project already exist
+                        httpMode: 'PUT',
+                        customHeaders: [
+                            [name: 'X-Api-Key', value: env.DEPENDENCYTRACK_API_TOKEN, maskValue: true]
+                        ],
+                        requestBody: body,
+                        url: "${DEPENDENCYTRACK_HOST}/api/v1/project",
+                        validResponseCodes: '200:299,409' // 409: project already exist
                 }
 
                 dependencyTrackPublisher(
