@@ -93,7 +93,7 @@ pipeline {
                     artifact: 'bom.xml',
                     projectName: env.JOB_NAME,
                     projectVersion: env.BUILD_NUMBER,
-                    synchronous: false,
+                    synchronous: true,
                     projectProperties: [
                         isLatest: true,
                         parentName: env.JOB_NAME,
