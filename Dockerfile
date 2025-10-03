@@ -6,7 +6,7 @@ ARG SYNCOVERY_AMD64_DOWNLOADLINK
 ARG SYNCOVERY_ARM64_DOWNLOADLINK
 
 LABEL maintainer="Stefan Ruepp"
-LABEL github="https://github.com/ruepp-jenkins/docker-refacto"
+LABEL github="https://github.com/ruepp-jenkins/docker-syncovery"
 LABEL TARGETPLATFORM=${TARGETPLATFORM}
 LABEL BUILDPLATFORM=${BUILDPLATFORM}
 
