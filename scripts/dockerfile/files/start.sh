@@ -16,6 +16,7 @@ function stop() {
 
 function start() {
   echo "OS Date: $(date)"
+  /docker/machine-id.sh
   mkdir -p ${SYNCOVERY_HOME}/.Syncovery
   touch ${SYNCOVERY_HOME}/.Syncovery/WebGUI.log
   

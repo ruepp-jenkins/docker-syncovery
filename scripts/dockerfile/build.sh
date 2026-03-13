@@ -20,6 +20,7 @@ find /build -type f -iname "*.sh" -exec chmod +x {} \;
 # add persisting
 mkdir -p /docker
 mv /build/files/start.sh /docker/
+mv /build/files/machine-id.sh /docker/
 
 # cleanup
 /build/cleanup.sh

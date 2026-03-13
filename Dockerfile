@@ -19,5 +19,5 @@ RUN /bin/bash /build/build.sh
 
 EXPOSE 8999 8889
 
-VOLUME [ "/tmp", "/config" ]
+VOLUME [ "/tmp", "/config", "/machine-id" ]
 CMD [ "/docker/start.sh" ]

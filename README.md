@@ -30,10 +30,9 @@ SOFTWARE.
 
 # Paths
 
-There are only two paths which are used:
-
 - /config: contains the syncovery config files
 - /tmp: default temporary folder for syncovery
+- /machine-id: stores the persistent machine-id (see Machine ID below)
 
 If your syncovery should work with files on the host filesystem, make sure to bind them into your container (see examples below, just extend the volumes / -v parts).
 
@@ -61,6 +60,19 @@ This image uses the default ports:
 
 - Syncovery: 8999
 
+# Machine ID
+
+Syncovery uses the machine-id for credential encryption. If the machine-id changes (e.g. after a container recreation), stored credentials become invalid.
+
+The container automatically manages `/etc/machine-id` and `/var/lib/dbus/machine-id`. On first start a new ID is generated and stored in `/machine-id/machine-id`. On subsequent starts the stored ID is reused.
+
+Mount `/machine-id` as a volume to make the ID survive container recreations and image updates:
+
+```yaml
+volumes:
+  - ./machine-id:/machine-id
+```
+
 # Docker compose (example)
 
 ```yaml
@@ -72,6 +84,7 @@ services:
     image: stefanruepp/syncoverycl
     volumes:
       - ./config:/config
+      - ./machine-id:/machine-id
       - /:/server:ro
     environment:
       TZ: Europe/Berlin
