@@ -1,47 +1,65 @@
+# General
+
+This is a private hobby project. It does nothing more than pack the Syncovery software into a docker container.
+
+It is **not affiliated with, endorsed by or supported by [Syncovery](https://www.syncovery.com/)** - all rights to Syncovery itself belong to its makers. For questions about the software (and for your license) please turn to them, not to me.
+
+I built this purely for my own setup and simply share it in case someone else finds it useful. Everyone is free to use it, but it comes as it is: no guarantee, no warranty and no support. Use it at your own risk.
+
 # Project
 
 Github: https://github.com/MyUncleSam/docker-syncovery
 
 Docker: https://hub.docker.com/repository/docker/stefanruepp/syncoverycl
 
-# License
-
-MIT License
-
-Copyright (c) 2020 Stefan Ruepp https://github.com/MyUncleSam/docker-syncovery
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
 # Paths
 
-- /config: contains the syncovery config files
-- /tmp: default temporary folder for syncovery
-- /machine-id: stores the persistent machine-id (see Machine ID below)
+| Path | Description |
+| --- | --- |
+| `/config` | Contains the syncovery config files (can be moved with `SYNCOVERY_HOME`) |
+| `/tmp` | Default temporary folder for syncovery |
+| `/machine-id` | Stores the persistent machine-id (see [Machine ID](#machine-id) below) |
 
 If your syncovery should work with files on the host filesystem, make sure to bind them into your container (see examples below, just extend the volumes / -v parts).
 
-# Environment variables (with default values)
+# Environment variables
 
-- TZ=Europe/Berlin
-  - Set your timezone here (see Time / Date below)
-- SYNCOVERY_HOME=/config
-  - Changes the default location of syncovery config files (changing should work but was never tested - so use at your own risk)
+| Variable | Default | Description | Examples |
+| --- | --- | --- | --- |
+| `TZ` | `Europe/Berlin` | Timezone used by syncovery (see [Time / Date](#time--date) below) | `Europe/Berlin`, `Africa/Windhoek`, `America/Costa_Rica` |
+| `SYNCOVERY_HOME` | `/config` | Location of the syncovery config files (changing should work but was never tested - so use at your own risk) | `/config`, `/data/syncovery` |
+| `SYNCOVERY_SET_*` | none | Any syncovery setting you want to apply (see [Syncovery settings](#syncovery-settings) below) | `SYNCOVERY_SET_WEBPORT=1234`, `SYNCOVERY_SET_WEBUSER=myuser` |
+
+Using the `SYNCOVERY_SET_*` prefix you can set nearly every syncovery setting. The prefix is removed and the rest is handed over to `SyncoveryCL SET` as `/<setting>=<value>` - all of them within one single call.
+
+Example - move the web GUI to another port and use your own credentials:
+
+```yaml
+environment:
+  SYNCOVERY_SET_WEBPORT: 1234
+  SYNCOVERY_SET_WEBUSER: myuser
+  SYNCOVERY_SET_WEBPASS: mypassword
+```
+
+results in:
+
+```sh
+SyncoveryCL SET /WEBPASS=mypassword /WEBPORT=1234 /WEBUSER=myuser
+```
+
+For details and a list of what can be set have a look at the official syncovery documentation: https://www.syncovery.com/linux-docs/
+
+# Syncovery settings
+
+A few things to keep in mind when using the `SYNCOVERY_SET_*` variables from above:
+
+- The settings are applied on **every** start, so the environment variables always win over what is stored in the config file. If you prefer to manage a setting in the web interface, do not put it into the environment.
+- On the very first start (as long as no config file exists yet) the container sets `/WEBSERVER=0.0.0.0` on its own so the web GUI is reachable from outside. This is nothing you should have to change.
+- Setting names keep their spelling, so `SYNCOVERY_SET_S3PartSize` becomes `/S3PartSize` - write them exactly as syncovery documents them.
+- If you change `WEBPORT`, remember to adjust your port mapping (`ports:` / `-p`) accordingly.
+- Values of settings containing `PASS` are masked in the container log.
+
+The available settings are documented by syncovery itself: https://www.syncovery.com/linux-docs/
 
 # Time / Date
 
@@ -56,9 +74,13 @@ Examples:
 
 # Ports
 
-This image uses the default ports:
+This image exposes the following ports:
 
-- Syncovery: 8999
+| Port | Description |
+| --- | --- |
+| `8999` | Web GUI (HTTP) |
+| `8889` | Cloud authentication |
+| `8943` | Web GUI (HTTPS) |
 
 # Machine ID
 
@@ -93,10 +115,10 @@ services:
       - 8889:8889
 ```
 
-# Docker run (exmample)
+# Docker run (example)
 
 ```sh
-docker run -d --name=syncovery -v /opt/docker/syncovery/config:/config -v /:/server:ro -p 8999:8999 stefanruepp/syncoverycl
+docker run -d --name=syncovery -v /opt/docker/syncovery/machine-id:/machine-id -v /opt/docker/syncovery/config:/config -v /:/server:ro -p 8999:8999 stefanruepp/syncoverycl
 ```
 
 # Tags

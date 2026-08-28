@@ -17,7 +17,7 @@ ADD scripts/dockerfile/ /build
 
 RUN /bin/bash /build/build.sh
 
-EXPOSE 8999 8889
+EXPOSE 8999 8889 8943
 
 VOLUME [ "/tmp", "/config", "/machine-id" ]
 CMD [ "/docker/start.sh" ]
