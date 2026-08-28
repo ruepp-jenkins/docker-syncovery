@@ -38,7 +38,14 @@ There are no tests or linting steps — this is a pure Docker image build projec
 - `master`/`main`: Publishes with `latest` tag + version-specific tags (e.g., `ubuntu-v<version>`, `<main-version>`)
 - Other branches: Publishes as test images prefixed with the branch name
 
-**Version detection:** `scripts/syncovery.sh` fetches version strings from `https://www.syncovery.com/linver_x86_64-Web.tar.gz.txt` and `https://www.syncovery.com/linver_aarch64.tar.gz.txt`, then exports `SYNCOVERY_VERSION`, `SYNCOVERY_MAIN_VERSION`, and download links for both architectures as environment variables used in the `docker buildx build` `--build-arg` flags.
+**Version detection:** `scripts/syncovery.sh` fetches version strings from `https://www.syncovery.com/linver_x86_64-Web.tar.gz.txt` and `https://www.syncovery.com/linver_aarch64-Web.tar.gz.txt`, then exports `SYNCOVERY_VERSION`, `SYNCOVERY_MAIN_VERSION`, and download links for both architectures as environment variables used in the `docker buildx build` `--build-arg` flags.
+
+The values are read by line number (`awk 'NR==5'` for the version, `NR==3` for the download link), so the script validates them before they are used — everything here ends up in a docker tag or a build argument:
+- `curl -fsS` makes an HTTP error a hard failure instead of handing the HTML error page to `awk`.
+- `SYNCOVERY_VERSION` has to match `^([0-9]+)(\.[0-9]+)+$`; the capture group is `SYNCOVERY_MAIN_VERSION` (`11.16.2` → `11`).
+- Both download links have to start with `https://`.
+
+Any of these failing aborts the build with a message naming the value it got.
 
 ## Container Details
 
