@@ -13,11 +13,15 @@ LABEL BUILDPLATFORM=${BUILDPLATFORM}
 ENV SYNCOVERY_HOME=/config
 ENV TZ=Europe/Berlin
 
-ADD scripts/dockerfile/ /build
+COPY scripts/dockerfile/ /build
 
 RUN /bin/bash /build/build.sh
 
-EXPOSE 8999 8889 8943
+EXPOSE 8999 8889
 
 VOLUME [ "/tmp", "/config", "/machine-id" ]
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
+    CMD curl -fsS "http://127.0.0.1:${SYNCOVERY_SET_WEBPORT:-8999}/" > /dev/null || exit 1
+
 CMD [ "/docker/start.sh" ]

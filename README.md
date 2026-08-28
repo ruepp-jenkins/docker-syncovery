@@ -80,7 +80,6 @@ This image exposes the following ports:
 | --- | --- |
 | `8999` | Web GUI (HTTP) |
 | `8889` | Cloud authentication |
-| `8943` | Web GUI (HTTPS) |
 
 # Machine ID
 
@@ -148,13 +147,17 @@ As the steps differ between arm64 and amd64 architecture all needed steps to bui
 - Jenkins
 - Jenkins agent with installed docker
 - Plugin UrlTrigger
+- Plugin Discord Notifier
 
 ## Variables
 
 The build script logs into docker bevore building the image. For this you need to set in you agent these variables:
 
-- DOCKER_USERNAME
-- DOCKER_PASSWORD (docker api password)
+| Variable | Description |
+| --- | --- |
+| `DOCKER_USERNAME` | Your docker hub username |
+| `DOCKER_API_PASSWORD` | Your docker hub api password, stored as jenkins credential of the same name |
+| `DISCORD_WEBHOOK` | Webhook url used to send the build notifications |
 
 ## Agent
 

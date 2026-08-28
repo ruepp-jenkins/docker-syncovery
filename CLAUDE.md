@@ -58,9 +58,8 @@ Any of these failing aborts the build with a message naming the value it got.
 | --- | --- |
 | 8999 | Web GUI (HTTP) |
 | 8889 | Cloud authentication |
-| 8943 | Web GUI (HTTPS) |
 
-The guardian (8900) and remote service (8949) are mentioned in the README's "Opening webinterface" section but are deliberately not `EXPOSE`d — users map them manually if needed.
+Everything else (HTTPS, guardian 8900, remote service 8949) is deliberately not `EXPOSE`d — users map those themselves.
 
 **Volumes:**
 
@@ -89,7 +88,11 @@ Notes for future changes:
 - Values of settings whose name contains `PASS` are masked in the startup log (e.g. `WEBPASS`), the real value is still passed to `SyncoveryCL`.
 - `/WEBSERVER=0.0.0.0` is added by `apply_settings()` only while `${SYNCOVERY_HOME}/.Syncovery/Syncovery.cfg` does not exist yet **and** the user has not set `SYNCOVERY_SET_WEBSERVER` themselves (which would otherwise produce a duplicate argument). This preserves the behaviour from before the `SYNCOVERY_SET_*` prefix: an existing installation keeps whatever binding is stored in its config. There is deliberately no `ENV SYNCOVERY_SET_WEBSERVER` in the `Dockerfile` — it would always be set and would therefore be applied on every start.
 - No setting has a default. If no `SYNCOVERY_SET_*` variable is set and the config file already exists, `SyncoveryCL SET` is not called at all.
-- Changing `SYNCOVERY_SET_WEBPORT` does not change the `EXPOSE`d ports — the port mapping has to be adjusted by the user.
+- Changing `SYNCOVERY_SET_WEBPORT` does not change the `EXPOSE`d ports — the port mapping has to be adjusted by the user. The `HEALTHCHECK` does follow it (`${SYNCOVERY_SET_WEBPORT:-8999}`).
+
+## Healthcheck
+
+The `Dockerfile` has a `HEALTHCHECK` that curls the web GUI on `${SYNCOVERY_SET_WEBPORT:-8999}` (shell form, so the variable is resolved in the running container). It exists because `scripts/dockerfile/files/start.sh` waits on the backgrounded `tail -f`, not on Syncovery — a Syncovery daemon that dies leaves PID 1 alive and the container would otherwise look healthy forever.
 
 ## Machine ID
 
@@ -98,6 +101,8 @@ Syncovery uses the machine-id for credential encryption — a changed ID invalid
 2. Writes the ID to `/etc/machine-id` and `/var/lib/dbus/machine-id` on every start
 
 Mount `/machine-id` as a volume to persist the ID across container recreations and image updates. Always keep this volume alongside `/config`.
+
+The script warns at startup when `/machine-id` is not on a volume of the user's own. Because the `Dockerfile` declares `VOLUME [ ... "/machine-id" ]`, docker always mounts *something* there, so `mountpoint` alone is not enough: the check reads `/proc/self/mountinfo` and treats an anonymous volume (source `/var/lib/docker/volumes/<64 hex chars>/_data`) the same as no volume at all, since it is discarded together with the container.
 
 ## Documentation
 
