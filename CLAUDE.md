@@ -88,11 +88,13 @@ Notes for future changes:
 - Values of settings whose name contains `PASS` are masked in the startup log (e.g. `WEBPASS`), the real value is still passed to `SyncoveryCL`.
 - `/WEBSERVER=0.0.0.0` is added by `apply_settings()` only while `${SYNCOVERY_HOME}/.Syncovery/Syncovery.cfg` does not exist yet **and** the user has not set `SYNCOVERY_SET_WEBSERVER` themselves (which would otherwise produce a duplicate argument). This preserves the behaviour from before the `SYNCOVERY_SET_*` prefix: an existing installation keeps whatever binding is stored in its config. There is deliberately no `ENV SYNCOVERY_SET_WEBSERVER` in the `Dockerfile` — it would always be set and would therefore be applied on every start.
 - No setting has a default. If no `SYNCOVERY_SET_*` variable is set and the config file already exists, `SyncoveryCL SET` is not called at all.
-- Changing `SYNCOVERY_SET_WEBPORT` does not change the `EXPOSE`d ports — the port mapping has to be adjusted by the user. The `HEALTHCHECK` does follow it (`${SYNCOVERY_SET_WEBPORT:-8999}`).
+- Changing `SYNCOVERY_SET_WEBPORT` does not change the `EXPOSE`d ports — the port mapping has to be adjusted by the user.
 
 ## Healthcheck
 
-The `Dockerfile` has a `HEALTHCHECK` that curls the web GUI on `${SYNCOVERY_SET_WEBPORT:-8999}` (shell form, so the variable is resolved in the running container). It exists because `scripts/dockerfile/files/start.sh` waits on the backgrounded `tail -f`, not on Syncovery — a Syncovery daemon that dies leaves PID 1 alive and the container would otherwise look healthy forever.
+The `Dockerfile` has a `HEALTHCHECK` running `pgrep -x SyncoveryCL`. It exists because `scripts/dockerfile/files/start.sh` waits on the backgrounded `tail -f`, not on Syncovery — a daemon that dies leaves PID 1 alive and the container would otherwise look healthy forever.
+
+Deliberately a process check and **not** a request against the web GUI: the port, the binding and whether the web server runs at all can be changed inside Syncovery without any environment variable, so an HTTP check would mark working containers of existing users unhealthy after an image update. The trade-off is that a hung-but-alive daemon is not detected. `pgrep` comes from `procps` in the base image.
 
 ## Machine ID
 

@@ -132,6 +132,21 @@ Several different tags are built to give you the possibility to use any specific
    - Username: default
    - Password: pass
 
+# Running SyncoveryCL commands
+
+Beside the web interface syncovery can also be controlled purely from the command line. The tool lives at `/syncovery/SyncoveryCL` inside the image and as the image has no entrypoint you can simply append your command:
+
+```sh
+docker run --rm -v ./config:/config -v ./machine-id:/machine-id \
+    stefanruepp/syncoverycl /syncovery/SyncoveryCL /LIST
+```
+
+Mount the same volumes your container uses, otherwise the command works on an empty configuration.
+
+Commands which talk to the **running** scheduler (`/STATUS`, `/CONTSTATUS`, `/RUNX=MyJob`, ...) have to be run inside your existing container instead - use `docker exec syncoverycl /syncovery/SyncoveryCL /STATUS`, a throwaway container only answers `Cannot communicate with scheduler`.
+
+All available commands (creating jobs, running them, changing settings, ...) are documented by syncovery itself: https://www.syncovery.com/linux-docs/
+
 # Github
 
 repository of this container: https://github.com/MyUncleSam/docker-syncovery
