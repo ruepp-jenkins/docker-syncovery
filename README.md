@@ -81,6 +81,14 @@ This image exposes the following ports:
 | `8999` | Web GUI (HTTP) |
 | `8889` | Cloud authentication |
 
+Those are the ports syncovery serves after a default start. The following ones are deliberately **not** exposed - they are switched off out of the box and their port number is freely configurable in syncovery, so an `EXPOSE` would only promise a default that does not exist. If you need one of them, map it yourself (e.g. `-p 8943:8943`):
+
+| Port | Description |
+| --- | --- |
+| `8943` | Web GUI (HTTPS) - the default port once you enable HTTPS in syncovery |
+| `8900` | Guardian |
+| `8949` | Remote service |
+
 # Machine ID
 
 Syncovery uses the machine-id for credential encryption. If the machine-id changes (e.g. after a container recreation), stored credentials become invalid.

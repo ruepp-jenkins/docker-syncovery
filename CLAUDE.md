@@ -61,7 +61,15 @@ Any of these failing aborts the build with a message naming the value it got.
 | 8999 | Web GUI (HTTP) |
 | 8889 | Cloud authentication |
 
-Everything else (HTTPS, guardian 8900, remote service 8949) is deliberately not `EXPOSE`d — users map those themselves.
+**Deliberately not `EXPOSE`d** (documented as a second table in `README.md`, users map them themselves):
+
+| Port | Purpose |
+| --- | --- |
+| 8943 | Web GUI (HTTPS), the default once HTTPS is enabled in Syncovery |
+| 8900 | Guardian |
+| 8949 | Remote service |
+
+None of them is served after a default start and the port number is a Syncovery setting, so `EXPOSE` would only produce dead `-P` mappings and dead links in UIs like Portainer. The rule for this image: `EXPOSE` lists what the container actually serves out of the box (same line the official `nginx` image takes with `80` but not `443`).
 
 **Volumes:**
 
