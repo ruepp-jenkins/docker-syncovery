@@ -85,8 +85,6 @@ Those are the ports syncovery serves after a default start. The following ones a
 
 | Port | Description |
 | --- | --- |
-| `8943` | Web GUI (HTTPS) - the default port once you enable HTTPS in syncovery |
-| `8900` | Guardian |
 | `8949` | Remote service |
 
 # Machine ID
