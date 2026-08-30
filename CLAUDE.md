@@ -90,6 +90,24 @@ Notes for future changes:
 - No setting has a default. If no `SYNCOVERY_SET_*` variable is set and the config file already exists, `SyncoveryCL SET` is not called at all.
 - Changing `SYNCOVERY_SET_WEBPORT` does not change the `EXPOSE`d ports — the port mapping has to be adjusted by the user.
 
+## Web GUI Addresses
+
+Syncovery skips the login when the web GUI is opened via `localhost` / `127.0.0.1`. Inside a container that detection only half works: the GUI loads but keeps asking for a login that never succeeds. Every other address (container ip, docker host, any domain name - even one resolving to `127.0.0.1`) behaves normally. This is syncovery behaviour and cannot be fixed from here, so the container only points the user at the addresses that do work.
+
+`scripts/dockerfile/files/webgui-hint.sh` runs at the end of `start()` in `scripts/dockerfile/files/start.sh` (after `SyncoveryCL start`, so the config file exists) and prints:
+- one line per address docker gave the container, read from `getent hosts $(hostname)` - docker writes one `/etc/hosts` entry per attached network. Empty with `--network host` / `--network none`, then `hostname -I` is used as fallback and the addresses are labelled `(this host)`.
+- the gateway of the default route (`/proc/net/route`, little endian hex) - the docker host on a bridge network. Deliberately **not** printed when no docker managed address was found, because with `--network host` the default gateway is the router of the host, not the host itself.
+- `syncovery.c.loopdns.de` (constant `WEBGUI_LOOPDNS` in the script) - a public dns name, resolvable by anyone (loopdns.de is a normal internet service, not a local-only resolver), pointing to `127.0.0.1`. The request ends up on the loopback interface of the machine running the browser, but Syncovery sees a name instead of `localhost` and the login works.
+- a closing note that names for **other** local addresses (container ip, docker host, ...) can be created with an account on `https://loopdns.de` (constant `WEBGUI_LOOPDNS_SITE`).
+
+The port comes from `SYNCOVERY_SET_WEBPORT`, then from the config, then the default `8999`. `${SYNCOVERY_HOME}/.Syncovery/Syncovery.cfg` is a **sqlite database** (tables `SECTIONS` / `DATA`), not an ini file — the web port is `Port1` in section `WEBSERVER` (the binding is `IP1` there). It is read with `sqlite3 "file:...?mode=ro"` so the running Syncovery is not disturbed; `sqlite3` is installed by `scripts/dockerfile/apt-get.sh` anyway.
+
+Notes for future changes:
+- The image has no `iproute2`, the addresses are collected with what the base image ships (`hostname`, `getent`, `awk`, `/proc/net/route`).
+- The ipv4 filter is written out as `[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+` on purpose: mawk 1.3.4 (the `awk` of the base image) does not reliably match the equivalent `([0-9]+\.){3}` interval form and silently drops addresses.
+- The printed port is always the port **inside** the container. A different host port (`-p 18999:8999`) cannot be detected from in here.
+- The hint is informational only, it never fails the start.
+
 ## Healthcheck
 
 The `Dockerfile` has a `HEALTHCHECK` running `pgrep -x SyncoveryCL`. It exists because `scripts/dockerfile/files/start.sh` waits on the backgrounded `tail -f`, not on Syncovery — a daemon that dies leaves PID 1 alive and the container would otherwise look healthy forever.

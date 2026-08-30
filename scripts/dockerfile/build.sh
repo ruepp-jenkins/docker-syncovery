@@ -21,6 +21,7 @@ find /build -type f -iname "*.sh" -exec chmod +x {} \;
 mkdir -p /docker
 mv /build/files/start.sh /docker/
 mv /build/files/machine-id.sh /docker/
+mv /build/files/webgui-hint.sh /docker/
 
 # cleanup
 /build/cleanup.sh

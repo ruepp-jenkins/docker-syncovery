@@ -64,6 +64,8 @@ function start() {
 
   echo "Starting Syncovery"
   /syncovery/SyncoveryCL start
+
+  /docker/webgui-hint.sh
 }
 
 start

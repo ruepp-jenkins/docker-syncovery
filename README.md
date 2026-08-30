@@ -127,10 +127,39 @@ Several different tags are built to give you the possibility to use any specific
 # Opening webinterface
 
 1. Run "Docker compose" or "Docker run".
-2. Go to http://docker-host:8999 (if docker runs local: http://localhost:8999) - for guardian http://docker-host:8900 and remote service http://docker-host:8949
+2. Go to http://docker-host:8999 - for guardian http://docker-host:8900 and remote service http://docker-host:8949 (do **not** use `localhost` / `127.0.0.1`, see [Do not use localhost](#do-not-use-localhost) below - the container prints usable addresses on every start)
 3. Login (use default credentials from syncovery documentation, they should be)
    - Username: default
    - Password: pass
+
+## Do not use localhost
+
+Syncovery skips the login if the web GUI is opened via `localhost` or `127.0.0.1`. Inside a container this only half works: the GUI loads, but it keeps asking for a login you cannot get past. Every other address behaves completely normal - the ip of the container, the ip of your docker host, your LAN ip or any domain name (even one resolving to `127.0.0.1`).
+
+To make that easier the container prints all addresses it knows on every start:
+
+```
+Web GUI addresses:
+  http://172.20.0.2:8999                     (this container)
+  http://172.20.0.1:8999                     (your docker host, needs a published port)
+  http://syncovery.c.loopdns.de:8999         (public dns name for 127.0.0.1)
+NOTE: syncovery skips the login when the web GUI is opened via localhost or
+NOTE: 127.0.0.1 - inside a container that only half works, the GUI loads but
+NOTE: keeps asking for the login. Use one of the addresses above instead,
+NOTE: any other ip or name works normally - see readme.
+NOTE: for a name pointing to another local address than 127.0.0.1 you can
+NOTE: create an account on https://loopdns.de and add your own entries.
+```
+
+| Address | Description |
+| --- | --- |
+| `this container` | The address docker handed to the container. Reachable from the docker host itself, no port mapping needed. One line per network the container is attached to (with `--network host` the addresses of the host are printed instead). |
+| `your docker host` | The gateway of the docker network, which is your docker host. Works as soon as the port is published with the same number on both sides (`-p 8999:8999`) - a different host port (`-p 18999:8999`) cannot be detected from inside the container. |
+| `syncovery.c.loopdns.de` | A public dns name (resolvable by anyone, it is a normal internet service) pointing to `127.0.0.1`. The request therefore ends up on the machine your browser runs on - just like localhost does - but syncovery sees a name instead of `localhost` and lets you log in normally. Use it on the machine the port is published on. |
+
+The port is taken from `SYNCOVERY_SET_WEBPORT`, otherwise from your syncovery configuration, otherwise `8999`.
+
+If you want such a name for one of the other addresses (your container ip, your docker host, ...) you can create an account on [loopdns.de](https://loopdns.de) and point your own names to your local addresses. If none of the printed addresses fits (e.g. you open the GUI from another computer) simply use the ip or hostname of your docker host - anything but `localhost` / `127.0.0.1` is fine.
 
 # Running SyncoveryCL commands
 
