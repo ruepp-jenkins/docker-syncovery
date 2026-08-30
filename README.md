@@ -184,6 +184,8 @@ repository of this container: https://github.com/MyUncleSam/docker-syncovery
 
 All builds are done automatically using a self hosted Jenkins environment. The build steps and configuration is defined in the `Jenkinsfile` and can be read from Jenkins to create a pipeline project from it.
 
+If a build fails it is automatically repeated once after a minute - most failures are temporary (syncovery.com or docker hub not reachable).
+
 As the steps differ between arm64 and amd64 architecture all needed steps to build the image are in the `scripts` folder.
 
 ## Requirements

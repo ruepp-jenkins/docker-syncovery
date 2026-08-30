@@ -34,6 +34,8 @@ There are no tests or linting steps — this is a pure Docker image build projec
 3. Inside the Dockerfile build: `scripts/dockerfile/build.sh` runs `apt-get.sh`, `tzdata.sh`, `platforms/{amd64,arm64}.sh`, `syncovery.sh`, `cleanup.sh`
 4. Container runtime entry point: `scripts/dockerfile/files/start.sh`
 
+The `Build` stage wraps `scripts/start.sh` in `retry(2)` with a one minute pause before the second attempt (`Jenkinsfile`). The usual failures are temporary — syncovery.com or Docker Hub not reachable — and everything in `start.sh` is idempotent (login, buildx setup, version fetch, `buildx build --push`). The pause is done before the retry, not after the last failure, so a build that fails twice still reports right away. Aborts (also the one from `disableConcurrentBuilds(abortPrevious: true)`) are not retried, and the Discord notification in `post { always }` runs once with the final result.
+
 **Branch behavior:**
 - `master`/`main`: Publishes with `latest` tag + version-specific tags (e.g., `ubuntu-v<version>`, `<main-version>`)
 - Other branches: Publishes as test images prefixed with the branch name

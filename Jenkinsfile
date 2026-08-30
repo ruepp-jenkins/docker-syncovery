@@ -58,7 +58,18 @@ pipeline {
         stage('Build') {
             steps {
                 sh 'chmod +x scripts/*.sh'
-                sh './scripts/start.sh'
+                script {
+                    // most failures here are temporary (syncovery.com or docker
+                    // hub not reachable), so give it a second try after a minute
+                    def attempt = 0
+                    retry(2) {
+                        if (attempt++ > 0) {
+                            echo 'Build failed - waiting a minute before the next attempt'
+                            sleep time: 1, unit: 'MINUTES'
+                        }
+                        sh './scripts/start.sh'
+                    }
+                }
             }
         }
     }
