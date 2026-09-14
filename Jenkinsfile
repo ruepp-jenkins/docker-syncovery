@@ -31,7 +31,7 @@ pipeline {
                     ]
                 ),
                 URLTriggerEntry(
-                    url: 'https://www.syncovery.com/linver_aarch64.tar.gz.txt',
+                    url: 'https://www.syncovery.com/linver_aarch64-Web.tar.gz.txt',
                     contentTypes: [
                         MD5Sum()
                     ]

@@ -10,7 +10,7 @@ I built this purely for my own setup and simply share it in case someone else fi
 
 Github: https://github.com/MyUncleSam/docker-syncovery
 
-Docker: https://hub.docker.com/repository/docker/ruepp/syncovery
+Docker: https://hub.docker.com/r/ruepp/syncovery
 
 # Paths
 
