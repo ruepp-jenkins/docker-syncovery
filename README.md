@@ -10,7 +10,7 @@ I built this purely for my own setup and simply share it in case someone else fi
 
 Github: https://github.com/MyUncleSam/docker-syncovery
 
-Docker: https://hub.docker.com/repository/docker/stefanruepp/syncoverycl
+Docker: https://hub.docker.com/repository/docker/ruepp/syncovery
 
 # Paths
 
@@ -108,7 +108,7 @@ services:
     container_name: syncoverycl
     hostname: syncoverycl
     restart: unless-stopped
-    image: stefanruepp/syncoverycl
+    image: ruepp/syncovery
     volumes:
       - ./config:/config
       - ./machine-id:/machine-id
@@ -123,7 +123,7 @@ services:
 # Docker run (example)
 
 ```sh
-docker run -d --name=syncovery -v /opt/docker/syncovery/machine-id:/machine-id -v /opt/docker/syncovery/config:/config -v /:/server:ro -p 8999:8999 stefanruepp/syncoverycl
+docker run -d --name=syncovery -v /opt/docker/syncovery/machine-id:/machine-id -v /opt/docker/syncovery/config:/config -v /:/server:ro -p 8999:8999 ruepp/syncovery
 ```
 
 # Tags
@@ -173,7 +173,7 @@ Beside the web interface syncovery can also be controlled purely from the comman
 
 ```sh
 docker run --rm -v ./config:/config -v ./machine-id:/machine-id \
-    stefanruepp/syncoverycl /syncovery/SyncoveryCL /LIST
+    ruepp/syncovery /syncovery/SyncoveryCL /LIST
 ```
 
 Mount the same volumes your container uses, otherwise the command works on an empty configuration.

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This repository automates building and publishing multi-architecture Docker images for **Syncovery** (enterprise backup/sync software) as `stefanruepp/syncoverycl` on Docker Hub. It supports both AMD64 and ARM64 via Docker buildx.
+This repository automates building and publishing multi-architecture Docker images for **Syncovery** (enterprise backup/sync software) as `stefanruepp/syncoverycl` and `ruepp/syncovery` on Docker Hub. It supports both AMD64 and ARM64 via Docker buildx.
 
 ## Build Commands
 
@@ -36,9 +36,11 @@ There are no tests or linting steps — this is a pure Docker image build projec
 
 The `Build` stage wraps `scripts/start.sh` in `retry(2)` with a one minute pause before the second attempt (`Jenkinsfile`). The usual failures are temporary — syncovery.com or Docker Hub not reachable — and everything in `start.sh` is idempotent (login, buildx setup, version fetch, `buildx build --push`). The pause is done before the retry, not after the last failure, so a build that fails twice still reports right away. Aborts (also the one from `disableConcurrentBuilds(abortPrevious: true)`) are not retried, and the Discord notification in `post { always }` runs once with the final result.
 
-**Branch behavior:**
+**Image names:** `IMAGE_FULLNAMES` in the `Jenkinsfile` is a space separated list (currently `stefanruepp/syncoverycl ruepp/syncovery`). `scripts/start.sh` collects the `-t` flags for every name into one bash array and runs a **single** `docker buildx build --push`, so all names get the exact same manifest (same digest) and nothing is built twice. The Docker Hub login (`DOCKER_USERNAME`) is one account and therefore needs push rights for every namespace in the list. To add or remove a name only the `Jenkinsfile` has to be changed. `README.md` deliberately knows only `ruepp/syncovery` (project link and all examples): it does not mention `stefanruepp/syncoverycl`, a second name, `IMAGE_FULLNAMES` or anything about switching names. Keep it that way, even though `stefanruepp/syncoverycl` is still published under the same tags.
+
+**Branch behavior** (applied to every image name):
 - `master`/`main`: Publishes with `latest` tag + version-specific tags (e.g., `ubuntu-v<version>`, `<main-version>`)
-- Other branches: Publishes as test images prefixed with the branch name
+- Other branches: Publishes as test images (`<name>-test`) with tags prefixed by the branch name
 
 **Version detection:** `scripts/syncovery.sh` fetches version strings from `https://www.syncovery.com/linver_x86_64-Web.tar.gz.txt` and `https://www.syncovery.com/linver_aarch64-Web.tar.gz.txt`, then exports `SYNCOVERY_VERSION`, `SYNCOVERY_MAIN_VERSION`, and download links for both architectures as environment variables used in the `docker buildx build` `--build-arg` flags.
 
